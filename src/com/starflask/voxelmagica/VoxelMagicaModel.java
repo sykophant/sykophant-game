@@ -66,6 +66,8 @@ public class VoxelMagicaModel {
 	      char c;
 	      
 	      try{
+	    	  //FOLLOW https://ephtracy.github.io/index.html?page=mv_vox_format
+	    	  
 	         // new input stream created
 	         is = new FileInputStream(filePath);
 	         
@@ -77,6 +79,8 @@ public class VoxelMagicaModel {
 	         System.out.println("magic num is "+magicNumber);
 	         System.out.println("version is "+version);
  
+	         
+	         RootVoxelChunk mainChunk = new RootVoxelChunk( is );
 	         
 	         while(is.read(buffer) != -1)
 	         {
@@ -133,8 +137,8 @@ public class VoxelMagicaModel {
 	
 	private static int littleEndianBytesToInt(byte b[])
 	{		
-		return ((b[3] & 0xFF) << 24) | ((b[2] & 0xFF) << 16)
-       	        | ((b[1] & 0xFF) << 8) | (b[0] & 0xFF);
+		return   (  ((b[3] & 0xFF) << 24) | ((b[2] & 0xFF) << 16)
+       	        | ((b[1] & 0xFF) << 8) | (b[0] & 0xFF));
 				
 	}
 	
@@ -144,6 +148,102 @@ public class VoxelMagicaModel {
 		return new String(b);
 	}
 	
+	
+	private class RootVoxelChunk
+	{
+		String chunkId;
+		int n_sizeOfContents;
+		int m_sizeOfChildren;
+		
+		VoxelData[] voxels;
+		ChildVoxelChunk[] chunks;
+		
+		private RootVoxelChunk(InputStream is) throws Exception
+		{
+			
+			  
+			chunkId = bytesToString(readFourBytes( is ));
+			n_sizeOfContents = littleEndianBytesToInt(readFourBytes( is ));
+			m_sizeOfChildren = littleEndianBytesToInt(readFourBytes( is ));
+			
+			System.out.println("id is "+ chunkId);
+			System.out.println("n is "+ n_sizeOfContents);
+			System.out.println("m is "+ m_sizeOfChildren);
+			
+			voxels = new VoxelData[n_sizeOfContents];
+			chunks = new ChildVoxelChunk[m_sizeOfChildren];
+			
+			//read chunk contents
+	        for(int i =0;i<n_sizeOfContents;i++)
+	        {
+	        	voxels[i] = new VoxelData(is);
+	        }
+	        
+	        for(int i =0;i<m_sizeOfChildren; i+=chunks[i].getSizeInBytes() )
+	        {
+	        	chunks[i] = new ChildVoxelChunk(is);
+	        	System.out.println( i );
+	        }
+	        
+	        
+			
+		}
+		
+	}
+		
+		private class ChildVoxelChunk
+		{
+			String chunkId;
+			int numVoxels; 
+			
+			VoxelData[] voxels;
+			
+			private ChildVoxelChunk(InputStream is) throws Exception
+			{
+				
+				chunkId = bytesToString(readFourBytes( is ));
+				numVoxels = littleEndianBytesToInt(readFourBytes( is ));
+				
+				System.out.println("child chunk id "+chunkId);
+				System.out.println("child chunk num voxels "+numVoxels);
+				
+				voxels = new VoxelData[numVoxels];
+				
+				 
+		        for(int i =0;i<numVoxels;i++)
+		        {
+		       // 	voxels[i] = new VoxelData(is);
+		        } 
+				
+			}
+
+			public int getSizeInBytes() {
+				 
+				return 4 + 4 + numVoxels*4;
+			} 
+		
+		
+		
+	}
+	
+		// each voxel : 1 byte x 4 : x, y, z, colorIndex ) x numVoxels
+
+		private class VoxelData 
+		{
+			int x;
+			int y;
+			int z;
+			int colorIndex;
+			
+			private VoxelData(InputStream is) throws Exception
+			{
+				x = littleEndianBytesToInt(readFourBytes( is ));
+				y = littleEndianBytesToInt(readFourBytes( is ));
+				z = littleEndianBytesToInt(readFourBytes( is ));
+				colorIndex = littleEndianBytesToInt(readFourBytes( is ));
+			}
+		
+		}
 	
 	
 }
