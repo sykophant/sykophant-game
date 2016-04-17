@@ -1,0 +1,2 @@
+Need to add jme3 and then add import utils for magicavoxel
+This game will be for sale but will also be open source
