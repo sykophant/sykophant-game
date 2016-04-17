@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -14,6 +16,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 
 public class VoxelMagicaModel {
+	
+	public static final int VOXEL_SIZE = 4; //bytes
 	String magicNumber;
 	int version;
 	
@@ -118,7 +122,7 @@ public class VoxelMagicaModel {
 		 
 		 char c;
 		 
-		  // for each byte in the buffer.. little endian
+	  // for each byte in the buffer.. little endian
         for(byte b:buffer)
         {
            // convert byte to character
@@ -133,6 +137,15 @@ public class VoxelMagicaModel {
         
         
 		return buffer;
+	}
+	
+
+	private int readByte(InputStream is) throws Exception {
+		
+		
+		int val = is.read();
+		System.out.println( val );
+		return  val;
 	}
 	
 	private static int littleEndianBytesToInt(byte b[])
@@ -156,7 +169,7 @@ public class VoxelMagicaModel {
 		int m_sizeOfChildren;
 		
 		VoxelData[] voxels;
-		ChildVoxelChunk[] chunks;
+		List<ChildVoxelChunk> chunks;
 		
 		private RootVoxelChunk(InputStream is) throws Exception
 		{
@@ -170,8 +183,11 @@ public class VoxelMagicaModel {
 			System.out.println("n is "+ n_sizeOfContents);
 			System.out.println("m is "+ m_sizeOfChildren);
 			
-			voxels = new VoxelData[n_sizeOfContents];
-			chunks = new ChildVoxelChunk[m_sizeOfChildren];
+			int numContentVoxels = n_sizeOfContents / VOXEL_SIZE;
+			
+			
+			voxels = new VoxelData[numContentVoxels];
+			chunks = new ArrayList<ChildVoxelChunk>();
 			
 			//read chunk contents
 	        for(int i =0;i<n_sizeOfContents;i++)
@@ -179,14 +195,35 @@ public class VoxelMagicaModel {
 	        	voxels[i] = new VoxelData(is);
 	        }
 	        
-	        for(int i =0;i<m_sizeOfChildren; i+=chunks[i].getSizeInBytes() )
+	        int chunkBytesRead = 0;
+	        
+	        while(chunkBytesRead<m_sizeOfChildren)
 	        {
-	        	chunks[i] = new ChildVoxelChunk(is);
-	        	System.out.println( i );
+	        	ChildVoxelChunk child = new ChildVoxelChunk(this, is);
+	        	chunks.add( child );
+	        	
+	        	chunkBytesRead += child.getSizeInBytes();
+	        	
+	        	System.out.println("at child chunk bytes " + chunkBytesRead );
+	        }
+	        
+	        for(int i =0;i<m_sizeOfChildren; i+=chunks.get(i).getSizeInBytes() )
+	        {
+	        	chunks.add( new ChildVoxelChunk(this, is) );
+	        	System.out.println("at child chunk bytes " + i );
 	        }
 	        
 	        
 			
+		}
+		
+		int SIZE_X,SIZE_Y,SIZE_Z; 
+		
+		void setSize(int x, int y, int z)
+		{
+			SIZE_X = x;
+			SIZE_Y = y;
+			SIZE_Z = z;
 		}
 		
 	}
@@ -195,29 +232,52 @@ public class VoxelMagicaModel {
 		{
 			String chunkId;
 			int numVoxels; 
+			int voxelDataSize;
 			
 			VoxelData[] voxels;
 			
-			private ChildVoxelChunk(InputStream is) throws Exception
+			private ChildVoxelChunk(RootVoxelChunk parent, InputStream is) throws Exception
 			{
 				
 				chunkId = bytesToString(readFourBytes( is ));
-				numVoxels = littleEndianBytesToInt(readFourBytes( is ));
-				
 				System.out.println("child chunk id "+chunkId);
-				System.out.println("child chunk num voxels "+numVoxels);
+				if(chunkId.equals("SIZE") )
+				{
+					//this should read in "aaO" 
+					int x = littleEndianBytesToInt(readFourBytes( is ) );
+					int y = littleEndianBytesToInt(readFourBytes( is ) );
+					int z = littleEndianBytesToInt(readFourBytes( is ) );
+					
+					parent.setSize(x,y,z);
+					System.out.println("setting size " + x + " "+ y +" "+ z);
+					return;
+				}
 				
+				
+				voxelDataSize = littleEndianBytesToInt(readFourBytes( is ))  ;
+				numVoxels = voxelDataSize/4;
+				
+				System.out.println("child chunk num voxels "+numVoxels);
+				 
 				voxels = new VoxelData[numVoxels];
 				
+			  
 				 
-		        for(int i =0;i<numVoxels;i++)
-		        {
-		       // 	voxels[i] = new VoxelData(is);
-		        } 
+					for(int i =0;i<numVoxels;i++)
+					{
+						voxels[i] = new VoxelData(is);
+						//	System.out.println(" voxel num " + i);
+					} 
+					 
 				
 			}
 
 			public int getSizeInBytes() {
+				
+				if(chunkId.equals("SIZE") )
+				{
+					return 4 + 3*4;
+				}
 				 
 				return 4 + 4 + numVoxels*4;
 			} 
@@ -235,12 +295,12 @@ public class VoxelMagicaModel {
 			int z;
 			int colorIndex;
 			
-			private VoxelData(InputStream is) throws Exception
+			private VoxelData(InputStream is) throws Exception //this reads 4 bytes
 			{
-				x = littleEndianBytesToInt(readFourBytes( is ));
-				y = littleEndianBytesToInt(readFourBytes( is ));
-				z = littleEndianBytesToInt(readFourBytes( is ));
-				colorIndex = littleEndianBytesToInt(readFourBytes( is ));
+				x = (readByte( is ));
+				y = (readByte( is ));
+				z = (readByte( is ));
+				colorIndex = (readByte( is ));
 			}
 		
 		}
