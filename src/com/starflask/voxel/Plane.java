@@ -1,4 +1,4 @@
-package com.starflask.view;
+package com.starflask.voxel;
 
 import com.starflask.util.*;
 

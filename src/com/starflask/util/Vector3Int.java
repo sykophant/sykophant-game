@@ -1,7 +1,9 @@
 package com.starflask.util;
 
 public class Vector3Int {
-		int x,y,z;
+		public int x;
+		public int y;
+		public int z;
 
 		public int getX() {
 			return x;

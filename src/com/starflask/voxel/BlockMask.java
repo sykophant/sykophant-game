@@ -11,8 +11,6 @@ import java.util.Arrays;
  
 
 import com.starflask.util.Vector3;
-import com.starflask.view.Outlines;
-import com.starflask.view.Plane;
  
 
 public class BlockMask implements Renderable {

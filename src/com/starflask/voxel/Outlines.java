@@ -1,4 +1,4 @@
-package com.starflask.view;
+package com.starflask.voxel;
 
 /**
  * A collection of static helper methods for drawing Outlines
