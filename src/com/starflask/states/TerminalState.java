@@ -29,7 +29,7 @@ public class TerminalState extends EntityAppState implements InputActionExecutor
 	      this.addComponent(new InputActionComponent( this ));
 	      this.getComponent(InputActionComponent.class).getRawStringInput().setActive(true);
 	      
-	      consoleInterface = new TerminalConsoleInterface();
+	      consoleInterface = new TerminalConsoleInterface( this );
 	      consoleInterface.start();
 	      
 	      terminalRenderer = new TerminalRenderer( getAssetLibrary() );
@@ -40,6 +40,8 @@ public class TerminalState extends EntityAppState implements InputActionExecutor
 	      this.getComponent(GuiNodeComponent.class).attachChild( terminalRenderer.getComponent( GuiNodeComponent.class  )  );
 	    	 
 	      
+	      terminalMenu = new TerminalMenu( terminalRenderer );
+	       
 	      setEnabled(false);
 	   }
 	 
@@ -99,7 +101,10 @@ public class TerminalState extends EntityAppState implements InputActionExecutor
 	}
 
 
-
+	public void processCommand(String cmd)
+	{
+		terminalMenu.receiveCommand(cmd);
+	}
 
 
 	public void toggle() {

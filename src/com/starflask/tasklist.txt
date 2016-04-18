@@ -3,3 +3,15 @@ Console should be animated and should resize to display automagically (code like
 Need to make the model from magicavoxel import into chunks for the TerrainWorld class - then be built and attached to rootnode
 
 This game will be for sale but will also be open source
+
+
+
+## Main Menu
+
+Splash Screen shows "Ultra Black Blood Death" banner which is a screenshot of a dynamically lit part of a map.. has a brushed mask around it that is gritty
+There is a ultra crazy insane metal guitar riff that plays simultaneously
+
+Then, that disappears and a ton of boot code appears that is really the boot code for the game (the logs) like a raspi.  It all types out in an animated way.
+A Message appears at the bottom that states "Please enter your command:"
+If a bogus command is entered, remind them in a funny random way that they can type "help" 
+

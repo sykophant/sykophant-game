@@ -86,7 +86,7 @@ public class Chunk extends Entity{
 			threadedBuildFinished = false;
 			//attach the new mesh to my geometry
 			attachNewGeometry();
-			System.out.println("attached chunk geom ");
+			System.out.println("attached chunk geom " + this );
 		}
 		
 		
@@ -371,10 +371,13 @@ public class Chunk extends Entity{
 	private Mesh generateNewMesh(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, FloatBuffer colorBuffer) {
 		Mesh newMesh = new Mesh();
 		
+		 
 		
 		 newMesh.setBuffer(Type.Color, 4, VertexBuffer.Format.Float,	colorBuffer);
 		  
-		 newMesh.setBuffer(Type.Position, 3,  vertexBuffer );
+		 newMesh.setBuffer(Type.Position, 3,VertexBuffer.Format.Float,  vertexBuffer );
+		 
+		 newMesh.setBuffer(Type.Normal, 3,VertexBuffer.Format.Float,  normalBuffer );
 		 
 		 return newMesh;
 		
@@ -438,8 +441,7 @@ public class Chunk extends Entity{
 		Material mat = getAssetLibrary().findMaterial("terrain_material");
 		geo.setMaterial(mat);
 		getNode().attachChild(geo) ;
-		
-		System.out.println("attached new chunk geom ");
+		 
 	}
 	
 

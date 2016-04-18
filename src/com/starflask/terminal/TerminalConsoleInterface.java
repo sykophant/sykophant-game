@@ -4,12 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.starflask.states.TerminalState;
+
 public class TerminalConsoleInterface {
 	
 	
 	ConsoleInputListener consoleInputListener;
 	
-	 
+	TerminalState terminalState;
+	
+	public TerminalConsoleInterface(TerminalState terminalState)
+	{
+		this.terminalState=terminalState;
+	}
 
 	public void start() {
 		consoleInputListener = new ConsoleInputListener(this);
@@ -23,9 +30,8 @@ public class TerminalConsoleInterface {
 
 	public void inputConsoleString(String s) {
 		if(s!=null)
-		{
-			System.out.println("got "+s );
-			
+		{ 
+			terminalState.processCommand(s);
 		}
 		
 	}

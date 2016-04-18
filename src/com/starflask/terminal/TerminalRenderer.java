@@ -14,7 +14,7 @@ public class TerminalRenderer extends Entity{
 	
 	//component for node to attach
 	
-
+	
 	
 	AssetLibrary assetLibrary;
 	
