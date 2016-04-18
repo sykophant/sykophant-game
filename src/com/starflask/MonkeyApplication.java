@@ -52,6 +52,7 @@ import com.jme3.scene.Spatial.CullHint;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext.Type;
 import com.jme3.system.JmeSystem;
+import com.starflask.states.CustomStatsAppState;
 
 /**
  * <code>SimpleApplication</code> is the base class for all jME3 Applications.
@@ -102,7 +103,7 @@ public abstract class MonkeyApplication extends LegacyApplication {
     }
 
     public MonkeyApplication() {
-        this(new StatsAppState(), new FlyCamAppState(), new AudioListenerState(), new DebugKeysAppState());
+        this(new CustomStatsAppState(), new FlyCamAppState(), new AudioListenerState(), new DebugKeysAppState());
     }
 
     public MonkeyApplication( AppState... initialStates ) {
@@ -181,6 +182,8 @@ public abstract class MonkeyApplication extends LegacyApplication {
     @Override
     public void initialize() {
         super.initialize();
+        
+        
 
         // Several things rely on having this
         guiFont = loadGuiFont();
@@ -273,4 +276,8 @@ public abstract class MonkeyApplication extends LegacyApplication {
 
     public void simpleRender(RenderManager rm) {
     }
+
+	public BitmapFont getGuiFont() { 
+		return guiFont;
+	}
 } 
