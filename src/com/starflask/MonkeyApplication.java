@@ -32,6 +32,7 @@
  */
 package com.starflask;
 
+import com.badlogic.ashley.core.Engine;
 import com.jme3.app.DebugKeysAppState;
 import com.jme3.app.FlyCamAppState;
 import com.jme3.app.LegacyApplication;
@@ -52,7 +53,9 @@ import com.jme3.scene.Spatial.CullHint;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext.Type;
 import com.jme3.system.JmeSystem;
+import com.starflask.peripherals.RawInputManager;
 import com.starflask.states.CustomStatsAppState;
+import com.starflask.states.TerminalState;
 
 /**
  * <code>SimpleApplication</code> is the base class for all jME3 Applications.
@@ -84,6 +87,9 @@ public abstract class MonkeyApplication extends LegacyApplication {
     protected FlyByCamera flyCam;
     protected boolean showSettings = true;
     private AppActionListener actionListener = new AppActionListener();
+    
+    
+    private Engine ashleyEngine = new Engine();
 
     private class AppActionListener implements ActionListener {
 
@@ -103,11 +109,15 @@ public abstract class MonkeyApplication extends LegacyApplication {
     }
 
     public MonkeyApplication() {
-        this(new CustomStatsAppState(), new FlyCamAppState(), new AudioListenerState(), new DebugKeysAppState());
+    	//new AudioListenerState(), 
+    	this(new CustomStatsAppState(), new FlyCamAppState(), new DebugKeysAppState(),new TerminalState(), new RawInputManager() );
+   
+        
     }
 
     public MonkeyApplication( AppState... initialStates ) {
         super(initialStates);
+       
     }
 
     @Override
@@ -126,10 +136,16 @@ public abstract class MonkeyApplication extends LegacyApplication {
                 return;
             }
         }
+        
+      
+      
         //re-setting settings they can have been merged from the registry.
         setSettings(settings);
         super.start();
     }
+    
+    
+    
 
     /**
      * Retrieves flyCam
@@ -207,14 +223,22 @@ public abstract class MonkeyApplication extends LegacyApplication {
             }
 
             inputManager.addListener(actionListener, INPUT_MAPPING_EXIT);
+            
+            inputManager.addRawInputListener(stateManager.getState(RawInputManager.class));
+            
+            
         }
-
+        
+       
+        
+        
         if (stateManager.getState(StatsAppState.class) != null) {
             // Some of the tests rely on having access to fpsText
             // for quick display.  Maybe a different way would be better.
             stateManager.getState(StatsAppState.class).setFont(guiFont);
             fpsText = stateManager.getState(StatsAppState.class).getFpsText();
         }
+       
 
         // call user code
         simpleInitApp();
@@ -280,4 +304,18 @@ public abstract class MonkeyApplication extends LegacyApplication {
 	public BitmapFont getGuiFont() { 
 		return guiFont;
 	}
+	
+	
+	public TerminalState getTerminalState()
+	{
+		return  stateManager.getState(TerminalState.class);
+		
+	}
+	
+	
+	public Engine getECS()
+	{
+		return ashleyEngine;
+	}
+	
 } 

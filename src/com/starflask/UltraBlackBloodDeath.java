@@ -6,6 +6,7 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
+import com.jme3.system.JmeContext;
 import com.starflask.gameinterface.*;
 
 public class UltraBlackBloodDeath extends MonkeyApplication {
@@ -19,8 +20,8 @@ public class UltraBlackBloodDeath extends MonkeyApplication {
 		
 		//AppSettings settings = new AppSettings(false);
 		//settings.setAudioRenderer(AppSettings.JOAL);
-		//app.setSettings(settings); 
- 
+		//app.setSettings(settings);  
+		
 		app.start();
 	}
 
