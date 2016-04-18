@@ -175,7 +175,6 @@ public class RawInputManager extends AbstractAppState implements RawInputListene
 	private void executeGlobalAction(InputActionType action, boolean pressed) {
 		 if(pressed)
 		 {
-			 System.out.println("meep " + action );
 			 if(action == InputActionType.TOGGLE_CONSOLE)
 			 {
 				 app.getStateManager().getState(TerminalState.class).toggle();

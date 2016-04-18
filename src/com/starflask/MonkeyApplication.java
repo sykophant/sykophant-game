@@ -32,6 +32,8 @@
  */
 package com.starflask;
 
+import org.lwjgl.opengl.Display;
+
 import com.badlogic.ashley.core.Engine;
 import com.jme3.app.DebugKeysAppState;
 import com.jme3.app.FlyCamAppState;
@@ -53,9 +55,13 @@ import com.jme3.scene.Spatial.CullHint;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext.Type;
 import com.jme3.system.JmeSystem;
+import com.starflask.assets.AssetLibrary;
+import com.starflask.assets.AssetLoadState;
 import com.starflask.peripherals.RawInputManager;
+import com.starflask.renderable.AdaptiveDisplay;
 import com.starflask.states.CustomStatsAppState;
 import com.starflask.states.TerminalState;
+ 
 
 /**
  * <code>SimpleApplication</code> is the base class for all jME3 Applications.
@@ -88,6 +94,8 @@ public abstract class MonkeyApplication extends LegacyApplication {
     protected boolean showSettings = true;
     private AppActionListener actionListener = new AppActionListener();
     
+    static AdaptiveDisplay adaptiveDisplay ;
+    
     
     private Engine ashleyEngine = new Engine();
 
@@ -110,8 +118,8 @@ public abstract class MonkeyApplication extends LegacyApplication {
 
     public MonkeyApplication() {
     	//new AudioListenerState(), 
-    	this(new CustomStatsAppState(), new FlyCamAppState(), new DebugKeysAppState(),new TerminalState(), new RawInputManager() );
-   
+    	this(new AssetLoadState(), new CustomStatsAppState(), new FlyCamAppState(), new DebugKeysAppState(), new RawInputManager() );
+    	 
         
     }
 
@@ -137,7 +145,10 @@ public abstract class MonkeyApplication extends LegacyApplication {
             }
         }
         
-      
+        // Make the main window resizable
+        Display.setResizable(true); 
+         
+          
       
         //re-setting settings they can have been merged from the registry.
         setSettings(settings);
@@ -200,7 +211,10 @@ public abstract class MonkeyApplication extends LegacyApplication {
         super.initialize();
         
         
-
+        
+        adaptiveDisplay = new AdaptiveDisplay();
+        System.out.println("hi");
+        
         // Several things rely on having this
         guiFont = loadGuiFont();
 
@@ -230,7 +244,7 @@ public abstract class MonkeyApplication extends LegacyApplication {
         }
         
        
-        
+        stateManager.attach(new TerminalState());
         
         if (stateManager.getState(StatsAppState.class) != null) {
             // Some of the tests rely on having access to fpsText
@@ -254,6 +268,15 @@ public abstract class MonkeyApplication extends LegacyApplication {
         }
 
         float tpf = timer.getTimePerFrame() * speed;
+        
+        
+        if (Display.wasResized()) {
+            int newWidth = Math.max(Display.getWidth(), 1);
+            int newHeight = Math.max(Display.getHeight(), 1);
+            reshape(newWidth, newHeight);
+            System.out.println("Display resized");
+        }
+        
 
         // update states
         if (prof!=null) prof.appStep(AppStep.StateManagerUpdate);
@@ -316,6 +339,16 @@ public abstract class MonkeyApplication extends LegacyApplication {
 	public Engine getECS()
 	{
 		return ashleyEngine;
+	}
+	
+	public AssetLibrary getAssetLibrary()
+	{
+		return stateManager.getState(AssetLoadState.class).getComponent(AssetLibrary.class);
+	}
+
+	public static AdaptiveDisplay getAdaptiveDisplay() {
+		 
+		return adaptiveDisplay;
 	}
 	
 } 

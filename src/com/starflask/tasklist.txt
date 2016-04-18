@@ -1,2 +1,5 @@
-Need to add jme3 and then add import utils for magicavoxel
+Console should be animated and should resize to display automagically (code like html and jquery)
+
+Need to make the model from magicavoxel import into chunks for the TerrainWorld class - then be built and attached to rootnode
+
 This game will be for sale but will also be open source

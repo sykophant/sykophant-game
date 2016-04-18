@@ -109,7 +109,11 @@
 	<classpathentry kind="lib" path="lib/jme/jogl-all-main-2.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/jme/jsr305-2.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/jme/jutils-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/jme/lwjgl-2.9.3.jar"/>
+	<classpathentry kind="lib" path="lib/jme/lwjgl-2.9.3.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="UltraBlackBloodDeath"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/jme/lwjgl-platform-2.9.3-natives-linux.jar"/>
 	<classpathentry kind="lib" path="lib/jme/lwjgl-platform-2.9.3-natives-osx.jar"/>
 	<classpathentry kind="lib" path="lib/jme/lwjgl-platform-2.9.3-natives-windows.jar"/>
