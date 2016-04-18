@@ -17,6 +17,12 @@ import com.jme3.texture.Texture.MagFilter;
 import com.jme3.texture.Texture.MinFilter;
 import com.jme3.util.BufferUtils;
 
+/**
+ * 
+ * 
+ * Width and height are percentage based
+ *
+ */
 public class GUIFilledRect extends GUINode {
 
 	

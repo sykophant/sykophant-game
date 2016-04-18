@@ -1,30 +1,38 @@
 package com.starflask.starvoxel;
 
-import game.Rectf;
-import game.TextureStore;
+  
 
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.lwjgl.BufferUtils;
+ 
 import org.lwjgl.opengl.GL11;
 
+import com.badlogic.ashley.core.Entity;
+import com.jme3.math.Vector2f;
+import com.jme3.math.Vector3f;
 import com.jme3.math.Vector4f;
+import com.jme3.scene.Mesh;
+import com.jme3.scene.VertexBuffer;
+import com.jme3.scene.VertexBuffer.Type;
+import com.jme3.util.BufferUtils;
 import com.starflask.util.Vector3;
 import com.starflask.util.Vector3Int;
+import com.starflask.voxelmagica.VoxelMagicaImporter;
+ 
  
 
-public class Chunk {
+public class Chunk extends Entity{
 
 	// Chunk properties
 	private Vector3Int position;
 	private Vector3Int size;
 	
 	// NOTE: this the same array as in the World class, so not all of these cubes belong to this chunk
-	private char[][][] cubes;
+	private int[][][] cubes;
 	private Vector3Int worldSize;
-	private Vector3 cubeSize;
+	private Vector3f cubeSize;
 	
 	// GL list for slightly faster rendering
 	private int glListIndex = 0;
@@ -33,35 +41,66 @@ public class Chunk {
 	private FloatBuffer vertexBuffer;
 	private FloatBuffer normalBuffer;
 	private FloatBuffer colorBuffer;
-	private FloatBuffer texCoordBuffer;
+	//private FloatBuffer texCoordBuffer;
 	
 	// Draw textures?
 	private boolean drawTextures;
 	
-	public Chunk(Vector3Int position, Vector3Int size, char[][][] cubes, Vector3Int worldSize, Vector3 cubeSize) {
+	  boolean needToRebuild = true;
+	private boolean threadedBuildFinished = false;
+	
+	VoxelTerrain terrain;
+	
+	public Chunk(VoxelTerrain terrain, Vector3Int position, Vector3Int size, int[][][] cubes, Vector3Int worldSize, Vector3f cubeSize) {
 		this.position = position;
 		this.size = size;
 		this.cubes = cubes;
 		this.worldSize = worldSize;
 		this.cubeSize = cubeSize;
+		
+		this.terrain=terrain;
+	}
+	
+	
+	public void update(float tpf)
+	{
+		if(needToRebuild)
+		{
+			needToRebuild = false;
+			
+			terrain.getChunkMeshBuilder().queueBuild(this);
+			
+		}
+		
+		
+		if(threadedBuildFinished)
+		{
+			threadedBuildFinished = false;
+			//attach the new mesh to my geometry
+			
+			
+		}
+		
+		
 	}
 	
 	public void setDrawTextures(boolean drawTextures) {
 		this.drawTextures = drawTextures;
 	}
+
 	
 	public void buildRenderData() {
 		// Generate vertex data
 		List<float[]> vertexArrays = new ArrayList<float[]>();
 		List<float[]> normalArrays = new ArrayList<float[]>();
 		List<float[]> colorArrays = new ArrayList<float[]>();
-		List<float[]> texCoordArrays = new ArrayList<float[]>();
+		//List<float[]> texCoordArrays = new ArrayList<float[]>();
 		
 		// Generate data for each cube
 		for(int x = 0; x < size.x; x++) {
 			for(int y = 0; y < size.y; y++) {
 				for(int z = 0; z < size.z; z++) {
-					char type = cubes[position.x + x][position.y + y][position.z + z];
+					int type = cubes[position.x + x][position.y + y][position.z + z];
 					
 					// Skip this cube if the type is EMPTY
 					if(type == CubeType.EMPTY)
@@ -69,10 +108,10 @@ public class Chunk {
 					
 					// Get the color and texture coords for this cube type
 					Vector4f color = getColor(type);
-					Rectf textureCoordinates = getTextureCoordinates(type);
+					//Rectf textureCoordinates = getTextureCoordinates(type);
 					
 					Vector3f pos1 = new Vector3f(x * cubeSize.x, y * cubeSize.y, z * cubeSize.z);
-					Vector3f pos2 = Vector3f.add(pos1, cubeSize);
+					Vector3f pos2 = pos1.clone().add(  cubeSize);
 					
 					// Top
 					if((position.y + y == worldSize.y - 1) || (cubes[position.x + x][position.y + y + 1][position.z + z] == 0)) {
@@ -89,16 +128,16 @@ public class Chunk {
 													0.0f, 1.0f, 0.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a});
+						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
+														textureCoordinates.right, textureCoordinates.bottom});*/
 					}
 					
 					// Bottom
@@ -116,16 +155,16 @@ public class Chunk {
 													0.0f, -1.0f, 0.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a});
+						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
+														textureCoordinates.right, textureCoordinates.bottom});*/
 					}
 					
 					// Front
@@ -143,16 +182,16 @@ public class Chunk {
 													0.0f, 0.0f, 1.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a});
+						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
+														textureCoordinates.right, textureCoordinates.bottom});*/
 					}
 					
 					// Back
@@ -170,16 +209,16 @@ public class Chunk {
 													0.0f, 0.0f, -1.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a});
+						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
+														textureCoordinates.right, textureCoordinates.bottom});*/
 					}
 					
 					// Right
@@ -197,16 +236,16 @@ public class Chunk {
 													1.0f, 0.0f, 0.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a});
+						colorArrays.add(new float[] { color.x, color.y, color.z, color.w, //w is alpha
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
+														textureCoordinates.right, textureCoordinates.bottom});*/
 					}
 					
 					// Left
@@ -224,19 +263,21 @@ public class Chunk {
 													-1.0f, 0.0f, 0.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a,
-													color.x, color.y, color.z, color.a});
+						colorArrays.add(new float[] { color.x, color.y, color.z, color.w, //w is alpha
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w,
+													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
+														textureCoordinates.right, textureCoordinates.bottom});*/
 					}
 				}
 			}
+			
+			
 		}
 		
 		// Create the float vertex buffer
@@ -287,7 +328,7 @@ public class Chunk {
 		// Create the tex coord buffer
 		numFloats = 0;
 		
-		for(float[] array : texCoordArrays) {
+	/*	for(float[] array : texCoordArrays) {
 			numFloats += array.length;
 		}
 		
@@ -297,7 +338,13 @@ public class Chunk {
 			texCoordBuffer.put(array);
 		}
 		
-		texCoordBuffer.flip();
+		texCoordBuffer.flip();*/
+		
+		
+		generateNewMesh(vertexArrays,normalArrays,colorArrays);  //this is all happening in the ChunkMeshBuilder thread so we use flags to handoff
+		
+		threadedBuildFinished = true;
+		
 		
 		// Delete old list (it will be recreated in the render method)
 		if(glListIndex != 0) {
@@ -306,36 +353,78 @@ public class Chunk {
 		}
 	}
 	
-	public void render() {
-		if(glListIndex == 0) {
-			// Create a gl list
-			glListIndex = GL11.glGenLists(1);
-			GL11.glNewList(glListIndex, GL11.GL_COMPILE);
-				// Save the current matrix
-				GL11.glPushMatrix();
-				
-				// Add the translation matrix
-				GL11.glTranslatef(position.x * cubeSize.x, position.y * cubeSize.y, position.z * cubeSize.z);
-				
-				GL11.glVertexPointer(3, 0, vertexBuffer);
-				GL11.glNormalPointer(0, normalBuffer);
-				
-				if(drawTextures)
-					GL11.glTexCoordPointer(2, 0, texCoordBuffer);
-				else
-					GL11.glColorPointer(4, 0, colorBuffer);
-				
-				GL11.glDrawArrays(GL11.GL_QUADS, 0, vertexBuffer.limit() / 3);
-				
-				// Restore the matrix
-				GL11.glPopMatrix();
-			GL11.glEndList();
-		}
+	
+	Mesh mesh;
+	
+	public Mesh generateNewMesh(List<float[]> vertices,List<float[]> normals ,List<float[]> colors  ) {
+
+		Mesh newMesh = new Mesh();
+
+
+		List<Byte> c5 = getByteArray( colors );
+
+		Vector3f[] v3 = vertices.toArray(
+				new Vector3f[vertices.size()]);
 		
-		GL11.glCallList(glListIndex);
+		
+	//	int indx[] = VoxelRenderData.convertIntegers(getIndexes());
+
+	
+		final int bufferSize = c5.size();
+		final ByteBuffer colorByteBuffer = BufferUtils
+				.createByteBuffer(bufferSize);
+		for (int i = 0; i < bufferSize; i++) {
+			colorByteBuffer.put(c5.get(i));
+		}
+		colorByteBuffer.flip();
+		if (colorByteBuffer != null) {
+			newMesh.setBuffer(Type.Color, 
+					4, 
+					VertexBuffer.Format.Byte,
+					colorByteBuffer);
+		}
+
+		newMesh.setBuffer(Type.Position, 3, BufferUtils.createFloatBuffer(v3));
+		
+		/*if( this.drawTextures )
+		{
+			Vector3f[] n3 = getNormals().toArray(new Vector3f[getNormals().size()]);
+			Vector2f[] t2 = getTexCoord().toArray(new Vector2f[getTexCoord().size()]);
+			
+			newMesh.setBuffer(Type.TexCoord, 2,
+		 BufferUtils.createFloatBuffer(t2));
+		 newMesh.setBuffer(Type.Normal, 2,
+		 BufferUtils.createFloatBuffer(n3));
+		}*/
+		
+	//	newMesh.setBuffer(Type.Index, 3, BufferUtils.createIntBuffer(indx));
+		
+		
+		
+		return newMesh;
 	}
 	
-	public Vector4f getColor(char type) {
+	 
+
+	public static  List<Byte> getByteArray( List<float[]> colors ) {
+		List<Byte> ret = new ArrayList<Byte>();
+
+				
+		for (int i = 0; i < colors.size(); i++) {
+			ret.add((byte) ((colors.get(i)[0] * 128)));
+			ret.add((byte) ((colors.get(i)[1] * 128)));
+			ret.add((byte) ((colors.get(i)[2] * 128)));
+			ret.add((byte) ((colors.get(i)[3] * 128)));
+		}
+		
+				
+		return ret;
+	}
+
+	public Vector4f getColor(int type) {
+		
+		
+		/*colors = VoxelMagicaImporter.VoxImporterListener
 		switch(type) {
 		case CubeType.DIRT:
 			return new Vector4f(0.35f, 0.15f, 0.0f, 1.0f);
@@ -345,12 +434,12 @@ public class Chunk {
 			return new Vector4f(0.3f, 0.3f, 0.3f, 1.0f);
 		case CubeType.WATER:
 			return new Vector4f(0.0f, 0.2f, 0.7f, 0.6f);
-		}
+		}*/
 		
-		return null;
+		return new Vector4f(0.35f, 0.15f, 0.0f, 1.0f);
 	}
 	
-	public Rectf getTextureCoordinates(char type) {
+/*	public Rectf getTextureCoordinates(char type) {
 		switch(type) {
 		case CubeType.DIRT:
 			return TextureStore.getTexRect(0, 1);
@@ -363,9 +452,36 @@ public class Chunk {
 		}
 
 		return null;
-	}
+	}*/
 	
-	public Vector3 getPosition() {
+	public Vector3Int getPosition() {
 		return position;
 	}
+
+
+	public int getChunkLOD() { 
+		
+		float dist = getCoordinates().distance( terrain.getCameraPosition().getPos() );
+		
+		if(dist < 50)
+		{
+			return ChunkLOD.HIGH;  
+		}
+		if(dist < 100)
+		{
+			return ChunkLOD.LOW;  
+		}
+		
+		return ChunkLOD.HIGH;   ///temp
+	 
+	}
+
+
+	private Vector3f getCoordinates() {
+		 
+		return getPosition().toVector3f() ; //inefficient.. lots of garbage collection
+	}
+	
+	
+	
 }

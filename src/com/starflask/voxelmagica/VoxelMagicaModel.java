@@ -29,7 +29,7 @@ public class VoxelMagicaModel implements VoxImporterListener{
 	
 	public void build(String filePath)
 	{
-		readVoxelMagicaModel(filePath);
+		magicaImporter.readVoxelMagicaModel(filePath);
 	}
 	
 	public static void main(String args[])
@@ -42,7 +42,7 @@ public class VoxelMagicaModel implements VoxImporterListener{
 		else
 		{
 			VoxelMagicaModel model = new VoxelMagicaModel();
-			magicaImporter = new VoxelMagicaImporter(model,false );
+			magicaImporter = new VoxelMagicaImporter(model  );
 			model.build(quickPath);
 		}
 	}
@@ -62,7 +62,7 @@ public class VoxelMagicaModel implements VoxImporterListener{
 		    File selectedFile = fileChooser.getSelectedFile();
 		    System.out.println("Selected file: " + selectedFile.getAbsolutePath());
 		    VoxelMagicaModel model = new VoxelMagicaModel();
-		    magicaImporter = new VoxelMagicaImporter(model,false );
+		    magicaImporter = new VoxelMagicaImporter(model );
 			model.build( selectedFile.getAbsolutePath() );
 		} 
 	 
@@ -71,25 +71,7 @@ public class VoxelMagicaModel implements VoxImporterListener{
 	}
 	
 	
-	public void readVoxelMagicaModel(String filePath)
-	{	
-		 DataInputStream is = null;
-	      byte[] buffer=new byte[4];
-	      char c;
-	  
-	    	   // new input stream created
-	       
-	         try {
-	        	  is = new DataInputStream(new FileInputStream(filePath));
-	 	         
-				magicaImporter.readMagica(  is);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	         
-	         
-	   }
+	
 	
 		List<BlockData> blocks = new ArrayList<BlockData>();
  
@@ -112,6 +94,12 @@ public class VoxelMagicaModel implements VoxImporterListener{
 				loc.set(x,y,z);
 				this.color=color;
 			}
+			
+		}
+
+		@Override
+		public void setColorPalette(int[] voxcolors) {
+			// TODO Auto-generated method stub
 			
 		}
 	

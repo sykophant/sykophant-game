@@ -8,6 +8,7 @@ package com.starflask.voxelmagica;
 //http://www.giawa.com/magicavoxel-c-importer/
 
 import java.io.DataInputStream;
+import java.io.FileInputStream;
 
 public class VoxelMagicaImporter {
 
@@ -20,15 +21,17 @@ public class VoxelMagicaImporter {
 				final int y, 
 				final int z,
 				final int color);
+
+		public void setColorPalette(int[] voxcolors);
 	}
 
 	private VoxImporterListener listener;
 	private boolean timelapse;
 
-	public VoxelMagicaImporter(VoxImporterListener listener, boolean timelapse)
+	public VoxelMagicaImporter(VoxImporterListener listener)
 	{
 		this.listener = listener;
-		this.timelapse = timelapse;
+		this.timelapse = false;
 	}
 
 	private static final int voxColors[] = new int[] {
@@ -89,6 +92,29 @@ public class VoxelMagicaImporter {
 		return buffer;
 
 	}
+	
+	
+	public void readVoxelMagicaModel(String filePath)
+	{	
+		 DataInputStream is = null;
+	      byte[] buffer=new byte[4];
+	      char c;
+	  
+	    	   // new input stream created
+	       
+	         try {
+	        	  is = new DataInputStream(new FileInputStream(filePath));
+	 	         
+			      readMagica(  is);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	         
+	         
+	   }
+	
+	
 	/// <summary>
 	/// Load a MagicaVoxel .vox format file into the custom ushort[] structure that we use for voxel chunks.
 	/// </summary>
@@ -166,6 +192,15 @@ public class VoxelMagicaImporter {
 			if (voxelData.length == 0) 
 				return;
 
+			if (colors == null) // use default palette
+			{
+				listener.setColorPalette( voxColors );
+			}
+			else
+			{
+				listener.setColorPalette( colors );
+			}
+			
 			// now push the voxel data into our voxel chunk structure
 			for (int i = 0; i < voxelData.length; i++)
 			{
@@ -173,6 +208,8 @@ public class VoxelMagicaImporter {
 				if (voxelData[i].x > 31 || voxelData[i].y > 31 || voxelData[i].z > 127) 
 					continue;
 
+				
+				//we dont want to pass each blocks integer color to the GPU..
 				int color = 0;
 
 				if (colors == null) // use default palette
@@ -193,8 +230,11 @@ public class VoxelMagicaImporter {
 
 				if (timelapse)
 					Thread.sleep(5);
-
-				listener.blockConstructed(sizex, sizey, sizez, voxelData[i].x, voxelData[i].y, voxelData[i].z, color);
+				
+				
+				int color_index = voxelData[i].color - 1; 
+				
+				listener.blockConstructed(sizex, sizey, sizez, voxelData[i].x, voxelData[i].y, voxelData[i].z, color_index);
 
 			}
 		}

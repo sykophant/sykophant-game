@@ -33,11 +33,14 @@ public class TerminalState extends EntityAppState implements InputActionExecutor
 	      consoleInterface.start();
 	      
 	      terminalRenderer = new TerminalRenderer( getAssetLibrary() );
-	      this.getComponent(GuiNodeComponent.class).attachChild( terminalRenderer.getComponent( GuiNodeComponent.class  )  );
-	      
-	      getRootGUINode().attachChild( this.getComponent(GuiNodeComponent.class) );
+	      //this.getComponent(GuiNodeComponent.class).attachChild( terminalRenderer.getComponent( GuiNodeComponent.class  )  );
+	       
 	      
 	      terminalRenderer.build();
+	      this.getComponent(GuiNodeComponent.class).attachChild( terminalRenderer.getComponent( GuiNodeComponent.class  )  );
+	    	 
+	      
+	      setEnabled(false);
 	   }
 	 
 	 
@@ -60,13 +63,11 @@ public class TerminalState extends EntityAppState implements InputActionExecutor
 	      super.setEnabled(enabled);
 	      if(enabled){
 	        // init stuff that is in use while this state is RUNNING
-	    	  this.getComponent(GuiNodeComponent.class).attachChild( terminalRenderer.getComponent( GuiNodeComponent.class  )  );
-	 	     
+	    	  getRootGUINode().attachChild( this.getComponent(GuiNodeComponent.class) );
 	         
 	      } else {
 	        // take away everything not needed while this state is PAUSED
-	    	  this.getComponent(GuiNodeComponent.class).detachChild( terminalRenderer.getComponent( GuiNodeComponent.class  )  );
-	 	     
+	    	   getRootGUINode().detachChild( this.getComponent(GuiNodeComponent.class) );
 	         
 	      }
 	    }
@@ -103,9 +104,7 @@ public class TerminalState extends EntityAppState implements InputActionExecutor
 
 	public void toggle() {
 		 setEnabled(!this.isEnabled());
-		 
-		 System.out.println( "toggling terminal statee " + this.isEnabled());
-		 System.out.println( "meep " + this.isEnabled());
+		  
 		
 	}
 

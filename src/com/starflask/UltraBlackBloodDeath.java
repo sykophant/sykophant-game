@@ -33,6 +33,9 @@ public class UltraBlackBloodDeath extends MonkeyApplication {
 	        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
 	        mat.setColor("Color", ColorRGBA.Blue);
 	        geom.setMaterial(mat);
+	        
+	        
+	         
 
 	        rootNode.attachChild(geom);
 		
