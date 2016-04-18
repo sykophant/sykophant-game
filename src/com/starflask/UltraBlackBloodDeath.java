@@ -8,6 +8,7 @@ import com.jme3.scene.shape.Box;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
 import com.starflask.gameinterface.*;
+import com.starflask.states.GameState;
 
 public class UltraBlackBloodDeath extends MonkeyApplication {
 
@@ -34,10 +35,10 @@ public class UltraBlackBloodDeath extends MonkeyApplication {
 	        mat.setColor("Color", ColorRGBA.Blue);
 	        geom.setMaterial(mat);
 	        
-	        
-	         
 
-	        rootNode.attachChild(geom);
+	       // rootNode.attachChild(geom);
+	        
+	        this.getStateManager().attach( new GameState() ) ;
 		
 	}
 	

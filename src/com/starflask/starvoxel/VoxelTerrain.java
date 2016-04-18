@@ -2,14 +2,17 @@ package com.starflask.starvoxel;
 
 import com.badlogic.ashley.core.Entity;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
+import com.starflask.assets.AssetLibrary;
+import com.starflask.renderable.NodeComponent;
 import com.starflask.renderable.PositioningComponent;
 import com.starflask.util.Vector3Int;
 
 public class VoxelTerrain extends Entity {
 
 	// Sizes
-		private Vector3Int size;
-		private Vector3f cubeSize;
+		private Vector3Int size = new Vector3Int(256,256,256);
+		private Vector3f cubeSize = new Vector3f(1f,1f,1f);
 		
 		// Array containing cube data
 		private int[][][] cubes;
@@ -27,14 +30,19 @@ public class VoxelTerrain extends Entity {
 		{
 			this.world=world;
 			
+			this.add(new NodeComponent());
+			
+			cubes = new int[size.x][size.y][size.z];
+			
+			initChunks(); 
+			
+			
 			
 		}
 		
 
 		boolean firstBuildPassComplete = false;
 		public void build() {
-			
-			buildChunkGeometry(new Vector3Int(256,256,256), cubes);
 			 
 			chunkMeshBuilder = new ChunkMeshBuilder();
 			chunkMeshBuilder.start();
@@ -47,12 +55,18 @@ public class VoxelTerrain extends Entity {
 		public void update(float tpf)
 		{
 			
+			
+			for(int x = 0; x < chunkArraySize.x; x++) {
+				for(int y = 0; y < chunkArraySize.y; y++) {
+					for(int z = 0; z < chunkArraySize.z; z++) {
+						chunks[x][y][z].update(tpf);
+					}
+				}
+			}
 		}
 		
 		
-		public void buildChunkGeometry(Vector3Int size, int[][][] data) {
-			this.size = size;
-			cubes = data;
+		public void initChunks(  ) { 
 			
 			// Calculate required number of chunks
 			chunkArraySize = new Vector3Int(((int)Math.ceil(((double)size.x) / ((double)chunkSize.x))),
@@ -60,6 +74,7 @@ public class VoxelTerrain extends Entity {
 										((int)Math.ceil(((double)size.z) / ((double)chunkSize.z))));
 			
 			chunks = new Chunk[chunkArraySize.x][chunkArraySize.y][chunkArraySize.z];
+			
 			
 			// Create the chunks
 			for(int x = 0; x < chunkArraySize.x; x++) {
@@ -83,12 +98,20 @@ public class VoxelTerrain extends Entity {
 						
 						chunks[x][y][z].setDrawTextures(false);
 						chunks[x][y][z].needToRebuild = true;
+						
+						getNode().attachChild(chunks[x][y][z].getSpatial()  );
 					}
 				}
 			}
 		}
 		
 		
+		private Node getNode() {
+			 
+			return this.getComponent(NodeComponent.class);
+		}
+
+
 		public boolean solidAt(Vector3f coordinates) {
 			// Calculate cube array coordinates
 			Vector3Int arrayCoords = new Vector3Int((int)((coordinates.x) / cubeSize.x), (int)((coordinates.y) / cubeSize.y), (int)((coordinates.z) / cubeSize.z));
@@ -162,6 +185,11 @@ public class VoxelTerrain extends Entity {
 			return chunkMeshBuilder;
 		}
 
+
+		public AssetLibrary getAssetLibrary()
+		{
+			return world.getAssetLibrary();
+		}
 
 
 	 

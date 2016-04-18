@@ -84,8 +84,8 @@ public class TerminalState extends EntityAppState implements InputActionExecutor
 	}
 
 
-	public void log(String string) {
-		// TODO Auto-generated method stub
+	public void log(String message) {
+		System.out.println(message);
 		
 	}
 

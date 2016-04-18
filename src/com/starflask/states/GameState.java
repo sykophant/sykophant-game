@@ -31,13 +31,13 @@ public class GameState extends EntityAppState implements InputActionExecutor{
 	      this.addComponent(new InputActionComponent( this ));
 	      this.getComponent(InputActionComponent.class).getRawStringInput().setActive(true);
 	      
-	      
+	      world = new VoxelWorld( app );
 	      world.build();
 	      
 		   this.getComponent(NodeComponent.class).attachChild( world.getComponent(NodeComponent.class)  );
 		   
 	      
-	      setEnabled(false);
+	      setEnabled(true);
 	   }
 	 
 	 
@@ -77,7 +77,7 @@ public class GameState extends EntityAppState implements InputActionExecutor{
 	{
 		super.update(tpf);
 		
-		
+		world.update(tpf);
 		
 	}
 

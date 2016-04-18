@@ -10,13 +10,19 @@ import java.util.List;
 import org.lwjgl.opengl.GL11;
 
 import com.badlogic.ashley.core.Entity;
+import com.jme3.material.Material;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.math.Vector4f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.util.BufferUtils;
+import com.starflask.assets.AssetLibrary;
+import com.starflask.renderable.NodeComponent;
 import com.starflask.util.Vector3;
 import com.starflask.util.Vector3Int;
 import com.starflask.voxelmagica.VoxelMagicaImporter;
@@ -59,7 +65,9 @@ public class Chunk extends Entity{
 		this.cubeSize = cubeSize;
 		
 		this.terrain=terrain;
-	}
+		
+		this.add(new NodeComponent());
+		}
 	
 	
 	public void update(float tpf)
@@ -72,18 +80,21 @@ public class Chunk extends Entity{
 			
 		}
 		
-		
-		if(threadedBuildFinished)
+	 
+		if(threadedBuildFinished )
 		{
 			threadedBuildFinished = false;
 			//attach the new mesh to my geometry
-			
-			
+			attachNewGeometry();
+			System.out.println("attached chunk geom ");
 		}
 		
 		
 	}
 	
+	
+
+
 	public void setDrawTextures(boolean drawTextures) {
 		this.drawTextures = drawTextures;
 	}
@@ -340,10 +351,13 @@ public class Chunk extends Entity{
 		
 		texCoordBuffer.flip();*/
 		
+		mesh = generateNewMesh(vertexBuffer,normalBuffer,colorBuffer);
+		//generateNewMesh(vertexArrays,normalArrays,colorArrays);  //this is all happening in the ChunkMeshBuilder thread so we use flags to handoff
 		
-		generateNewMesh(vertexArrays,normalArrays,colorArrays);  //this is all happening in the ChunkMeshBuilder thread so we use flags to handoff
-		
-		threadedBuildFinished = true;
+		 if(mesh!=null)
+		 {
+			 threadedBuildFinished = true;
+		 }
 		
 		
 		// Delete old list (it will be recreated in the render method)
@@ -354,6 +368,19 @@ public class Chunk extends Entity{
 	}
 	
 	
+	private Mesh generateNewMesh(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, FloatBuffer colorBuffer) {
+		Mesh newMesh = new Mesh();
+		
+		
+		 newMesh.setBuffer(Type.Color, 4, VertexBuffer.Format.Float,	colorBuffer);
+		  
+		 newMesh.setBuffer(Type.Position, 3,  vertexBuffer );
+		 
+		 return newMesh;
+		
+	}
+
+
 	Mesh mesh;
 	
 	public Mesh generateNewMesh(List<float[]> vertices,List<float[]> normals ,List<float[]> colors  ) {
@@ -363,8 +390,7 @@ public class Chunk extends Entity{
 
 		List<Byte> c5 = getByteArray( colors );
 
-		Vector3f[] v3 = vertices.toArray(
-				new Vector3f[vertices.size()]);
+		Vector3f[] v3 = vertices.toArray(new Vector3f[vertices.size()]);
 		
 		
 	//	int indx[] = VoxelRenderData.convertIntegers(getIndexes());
@@ -405,6 +431,17 @@ public class Chunk extends Entity{
 	}
 	
 	 
+	
+	private void attachNewGeometry() {
+		
+		Geometry geo = new Geometry("Chunk", mesh); // using our custom mesh object
+		Material mat = getAssetLibrary().findMaterial("terrain_material");
+		geo.setMaterial(mat);
+		getNode().attachChild(geo) ;
+		
+		System.out.println("attached new chunk geom ");
+	}
+	
 
 	public static  List<Byte> getByteArray( List<float[]> colors ) {
 		List<Byte> ret = new ArrayList<Byte>();
@@ -481,7 +518,22 @@ public class Chunk extends Entity{
 		 
 		return getPosition().toVector3f() ; //inefficient.. lots of garbage collection
 	}
+
+
+	public Spatial getSpatial() {
+		 
+		return this.getComponent(NodeComponent.class);
+	}
 	
+	public Node getNode() {
+		 
+		return this.getComponent(NodeComponent.class);
+	}
+	
+	public AssetLibrary getAssetLibrary()
+	{
+		return terrain.getAssetLibrary();
+	}
 	
 	
 }

@@ -1,5 +1,6 @@
 package com.starflask.voxel;
 
+import com.jme3.scene.Spatial;
 import com.starflask.noise.Perlin;
 import com.starflask.util.Vector3;
 
@@ -156,5 +157,10 @@ public class Chunk {
 				}
 			}
 		}
+	}
+
+	public Spatial getSpatial() {
+		 
+		return null;
 	}
 }

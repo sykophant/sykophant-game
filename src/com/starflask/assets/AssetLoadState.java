@@ -33,8 +33,9 @@ public class AssetLoadState extends EntityAppState   {
 		 
 		getAssetLibrary().registerAsset("console_background",  new Material(getAssetManager(),  "Common/MatDefs/Misc/Unshaded.j3md")  );
 
-	 
 		
+		getAssetLibrary().registerAsset("terrain_material",  new Material(getAssetManager(),  "Common/MatDefs/Misc/Unshaded.j3md")  );
+
 	}
 
 
