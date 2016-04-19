@@ -46,17 +46,18 @@ public class Chunk extends Entity{
 	private int glListIndex = 0;
 	
 	// Buffers
-	private FloatBuffer vertexBuffer;
+	/*private FloatBuffer vertexBuffer;
 	private IntBuffer indexBuffer;
 	private FloatBuffer normalBuffer;
 	private FloatBuffer colorBuffer;
 	 private FloatBuffer texCoordBuffer;
+	*/
 	
 	// Draw textures?
-	private boolean drawTextures;
+	boolean drawTextures;
 	
 	  boolean needToRebuild = true;
-	private boolean threadedBuildFinished = false;
+	boolean threadedBuildFinished = false;
 	
 	VoxelTerrain terrain;
 	
@@ -106,430 +107,15 @@ public class Chunk extends Entity{
 	}
 
 	
-	public void buildRenderData() {
-		// Generate vertex data
-		List<float[]> vertexArrays = new ArrayList<float[]>();
-		List<int[]> indexArrays = new ArrayList<int[]>();
-		List<float[]> normalArrays = new ArrayList<float[]>();
-		List<float[]> colorArrays = new ArrayList<float[]>();
-		List<float[]> texCoordArrays = new ArrayList<float[]>();
-		
-		int verticesSize = 0;
-		
-		// Generate data for each cube
-		for(int x = 0; x < size.x; x++) {
-			for(int y = 0; y < size.y; y++) {
-				for(int z = 0; z < size.z; z++) {
-					int type = cubes[position.x + x][position.y + y][position.z + z];
-					
-					// Skip this cube if the type is EMPTY
-					if(type == CubeType.EMPTY)
-						continue;
-					
-					// Get the color and texture coords for this cube type
-					Vector4f color = getColor(type);
-					 Rectf textureCoordinates = getTextureCoordinates(type);
-					
-					Vector3f pos1 = new Vector3f(x * cubeSize.x, y * cubeSize.y, z * cubeSize.z);
-					Vector3f pos2 = pos1.clone().add(  cubeSize);
-					
-					verticesSize = vertexArrays.size()*4;
-				 	
-					int indexes[] = { 2,0,1, 1,3,2 }; //original
-					// int indexes[] = {2,1,0, 0,3,2};
-					
-					//bottom and top is z
-					//left and right is x
-					
-					// Top
-					if((position.y + y == worldSize.y - 1) || (cubes[position.x + x][position.y + y + 1][position.z + z] == 0)) {
-						// Vertex data
-						vertexArrays.add(new float[] { pos1.x, pos2.y, pos1.z,// BOTTOM LEFT
-													pos1.x, pos2.y, pos2.z,// BOTTOM RIGHT
-													pos2.x, pos2.y, pos1.z,//TOP LEFT
-													pos2.x, pos2.y, pos2.z });//TOP RIGHT
-						
-						System.out.println("rendering top ");
-						
-						//Indices
-						 
-						indexArrays.add(new int[] {
-								verticesSize + indexes[0],
-								verticesSize + indexes[1],
-								verticesSize + indexes[2],
-								verticesSize + indexes[3],
-								verticesSize + indexes[4],
-								verticesSize + indexes[5],
-						});
-						
-						// Normals
-						normalArrays.add(new float[] { 0.0f, 1.0f, 0.0f,
-													0.0f, 1.0f, 0.0f,
-													0.0f, 1.0f, 0.0f,
-													0.0f, 1.0f, 0.0f});
-						
-						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w});
-						
-						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
-					}
-					
-					verticesSize = vertexArrays.size()*4;
-					
-					// Bottom
-					if((position.y + y == 0) || (cubes[position.x + x][position.y + y - 1][position.z + z] == 0)) {
-						System.out.println("rendering bottom ");
-						
-						// Vertex data
-						vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z,// BOTTOM LEFT
-													pos2.x, pos1.y, pos1.z,// BOTTOM RIGHT
-													pos1.x, pos1.y, pos2.z,//TOP LEFT
-													pos2.x, pos1.y, pos2.z });//TOP RIGHT
-						
-						
-						
-
-						
-						
-						//Indices
-						 
-						indexArrays.add(new int[] {
-								verticesSize + indexes[0],
-								verticesSize + indexes[1],
-								verticesSize + indexes[2],
-								verticesSize + indexes[3],
-								verticesSize + indexes[4],
-								verticesSize + indexes[5],
-						});
-						
-						// Normals
-						normalArrays.add(new float[] { 0.0f, -1.0f, 0.0f,
-													0.0f, -1.0f, 0.0f,
-													0.0f, -1.0f, 0.0f,
-													0.0f, -1.0f, 0.0f});
-						
-						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w});
-						
-						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
-					}
-					
-					verticesSize = vertexArrays.size()*4;
-					
-					// Front
-					
-					if((position.z + z == worldSize.z - 1) || (cubes[position.x + x][position.y + y][position.z + z + 1] == 0)) {
-						System.out.println("rendering front ");
-						
-						// Vertex data
-						vertexArrays.add(new float[] { pos1.x, pos1.y, pos2.z, // BOTTOM LEFT
-													pos2.x, pos1.y, pos2.z,// BOTTOM RIGHT
-													pos1.x, pos2.y, pos2.z,//TOP LEFT
-													pos2.x, pos2.y, pos2.z });//TOP RIGHT
-						
-						 
-						
-						//Indices
-						
-						indexArrays.add(new int[] {
-								verticesSize + indexes[0],
-								verticesSize + indexes[1],
-								verticesSize + indexes[2],
-								verticesSize + indexes[3],
-								verticesSize + indexes[4],
-								verticesSize + indexes[5],
-						});
-						
-						// Normals
-						normalArrays.add(new float[] { 0.0f, 0.0f, 1.0f,
-													0.0f, 0.0f, 1.0f,
-													0.0f, 0.0f, 1.0f,
-													0.0f, 0.0f, 1.0f});
-						
-						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w});
-						
-						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
-					}
-					
-					verticesSize = vertexArrays.size()*4;
-					
-					// Back
-					if((position.z + z == 0) || (cubes[position.x + x][position.y + y][position.z + z - 1] == 0)) {
-						System.out.println("rendering back ");
-						
-						// Vertex data
-						vertexArrays.add(new float[] {  pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
-													pos1.x, pos2.y, pos1.z,// BOTTOM RIGHT
-													pos2.x, pos1.y, pos1.z,//TOP LEFT
-													pos2.x, pos2.y, pos1.z });//TOP RIGHT
-						
-						//Indices
-						 
-						indexArrays.add(new int[] {
-								verticesSize + indexes[0],
-								verticesSize + indexes[1],
-								verticesSize + indexes[2],
-								verticesSize + indexes[3],
-								verticesSize + indexes[4],
-								verticesSize + indexes[5],
-						});
-						
-						// Normals
-						normalArrays.add(new float[] { 0.0f, 0.0f, -1.0f,
-													0.0f, 0.0f, -1.0f,
-													0.0f, 0.0f, -1.0f,
-													0.0f, 0.0f, -1.0f});
-						
-						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w});
-						
-						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
-					}
-					
-					verticesSize = vertexArrays.size()*4;
-					
-					// Right
-					if((position.x + x == worldSize.x - 1) || (cubes[position.x + x + 1][position.y + y][position.z + z] == 0)) {
-						// Vertex data
-						vertexArrays.add(new float[] { pos2.x, pos1.y, pos1.z, // BOTTOM LEFT
-													pos2.x, pos2.y, pos1.z, // BOTTOM RIGHT
-													pos2.x, pos1.y, pos2.z, //TOP LEFT
-													pos2.x, pos2.y, pos2.z }); //TOP RIGHT
-						
-		 
-						
-						//Indices
-					 
-						indexArrays.add(new int[] {
-								verticesSize + indexes[0],
-								verticesSize + indexes[1],
-								verticesSize + indexes[2],
-								verticesSize + indexes[3],
-								verticesSize + indexes[4],
-								verticesSize + indexes[5],
-						});
-						
-						// Normals
-						normalArrays.add(new float[] { 1.0f, 0.0f, 0.0f,
-													1.0f, 0.0f, 0.0f,
-													1.0f, 0.0f, 0.0f,
-													1.0f, 0.0f, 0.0f});
-						
-						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w, //w is alpha
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w});
-						
-						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
-					}
-					 
-					 verticesSize = vertexArrays.size()*4;
-					  
-					// Left
-					if((position.x + x == 0) || (cubes[position.x + x - 1][position.y + y][position.z + z] == 0)) {
-						// Vertex data
-						vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
-													pos1.x, pos1.y, pos2.z, // BOTTOM RIGHT
-													pos1.x, pos2.y, pos1.z, //TOP LEFT
-													pos1.x, pos2.y, pos2.z }); //TOP RIGHT
-						
-						//Indices
-					 
-						indexArrays.add(new int[] {
-								verticesSize + indexes[0],
-								verticesSize + indexes[1],
-								verticesSize + indexes[2],
-								verticesSize + indexes[3],
-								verticesSize + indexes[4],
-								verticesSize + indexes[5],
-						});
-						
-						// Normals
-						normalArrays.add(new float[] { -1.0f, 0.0f, 0.0f,
-													-1.0f, 0.0f, 0.0f,
-													-1.0f, 0.0f, 0.0f,
-													-1.0f, 0.0f, 0.0f});
-						
-						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w, //w is alpha
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w,
-													color.x, color.y, color.z, color.w});
-						
-						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.top,
-														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});
-					}  
-				}
-			}
-			
-			
-		}
-		
-		// Create the float vertex buffer
-		int numFloats = 0;
-		
-		for(float[] array : vertexArrays) {
-			numFloats += array.length;
-		}
-		
-		vertexBuffer = BufferUtils.createFloatBuffer(numFloats);
-		
-		System.out.println("vertices:"+numFloats);
-		for(float[] array : vertexArrays) {
-			for(float f : array)
-			{
-				System.out.println("vertex " + f);
-			}
-			vertexBuffer.put(array);
-		}
-		
-		vertexBuffer.flip();
-		
-		//create index buffer
-		  numFloats = 0;
-		
-		for(int[] array : indexArrays) {
-			numFloats += array.length;
-		}
-		indexBuffer = BufferUtils.createIntBuffer(numFloats);
-		
-		System.out.println("indices:"+numFloats);
-		for(int[] array : indexArrays) {	
-			
-			for(int i : array)
-			{
-				System.out.println("index " + i);
-			}
-			
-			indexBuffer.put(array);
-		}
-		
-		indexBuffer.flip();
-		
-		// Create the normal buffer
-		numFloats = 0;
-		
-		for(float[] array : normalArrays) {
-			numFloats += array.length;
-		}
-		
-		normalBuffer = BufferUtils.createFloatBuffer(numFloats);
-		
-		for(float[] array : normalArrays) {
-			normalBuffer.put(array);
-		}
-		
-		normalBuffer.flip();
-		
-		// Create the color buffer
-		numFloats = 0;
-		
-		for(float[] array : colorArrays) {
-			numFloats += array.length;
-		}
-		
-		colorBuffer = BufferUtils.createFloatBuffer(numFloats);
-		
-		for(float[] array : colorArrays) {
-			colorBuffer.put(array);
-		}
-		
-		colorBuffer.flip();
-		
-		// Create the tex coord buffer
-		numFloats = 0;
-		
-	 	for(float[] array : texCoordArrays) {
-			numFloats += array.length;
-		}
-		
-	 	if(this.drawTextures)
-	 	{
-		texCoordBuffer = BufferUtils.createFloatBuffer(numFloats);
-		
-		for(float[] array : texCoordArrays) {
-			texCoordBuffer.put(array);
-		}
-		
-		texCoordBuffer.flip(); 
-	 	}
-		
-		mesh = generateNewMesh(vertexBuffer,normalBuffer,colorBuffer,indexBuffer);
-		//generateNewMesh(vertexArrays,normalArrays,colorArrays);  //this is all happening in the ChunkMeshBuilder thread so we use flags to handoff
-		
-		 if(mesh!=null)
-		 {
-			 threadedBuildFinished = true;
-		 }
-		
-		
-		// Delete old list (it will be recreated in the render method)
-		if(glListIndex != 0) {
-			GL11.glDeleteLists(glListIndex, 1);
-			glListIndex = 0;
-		}
-	}
 	
+		
 	
-	private Rectf getTextureCoordinates(int type) {
+	Rectf getTextureCoordinates(int type) {
 		 
 		return new Rectf(0,0,1,1);
 	}
 
 
-	private Mesh generateNewMesh(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, FloatBuffer colorBuffer, IntBuffer indexBuffer) {
-		Mesh newMesh = new Mesh();
-		
-		 
-			//make color a single int and use shader?
-		 newMesh.setBuffer(Type.Color, 4, VertexBuffer.Format.Float,	colorBuffer);
-		  
-		 newMesh.setBuffer(Type.Position, 3,   vertexBuffer );
-		 
-		 newMesh.setBuffer(Type.Index, 3, 	indexBuffer);	 
-		 
-		 newMesh.setBuffer(Type.Normal, 3,VertexBuffer.Format.Float,  normalBuffer );
-		 
-		 return newMesh;
-		
-	}
 
 
 	Mesh mesh;
@@ -688,6 +274,55 @@ public class Chunk extends Entity{
 	public AssetLibrary getAssetLibrary()
 	{
 		return terrain.getAssetLibrary();
+	}
+
+
+	public Vector3Int getSize() {
+		 
+		return size;
+	}
+
+
+	public int[][][] getCubes() {
+		 
+		return cubes;
+	}
+
+
+	public Vector3f getCubeSize() {
+		 
+		return cubeSize;
+	}
+
+
+	public Vector3Int getWorldSize() {
+		 
+		return worldSize;
+	}
+
+
+	public void setMesh(Mesh m) {
+		mesh = m;
+	}
+
+
+	public int getBlockTypeFromLocalPosition(int x, int y, int z) {
+		
+		Vector3Int worldPos = position.clone().add(x,y,z);
+		 
+		
+		if(withinWorldBounds(worldPos))
+		{
+			int type = cubes[worldPos.x][worldPos.y][worldPos.z];
+			return type;
+		}
+		return 0;
+	}
+
+
+	private boolean withinWorldBounds(Vector3Int pos) {
+		 
+		return pos.x>0 && pos.x<worldSize.x && pos.y>0 && pos.y<worldSize.y && pos.z>0 && pos.z<worldSize.z;
 	}
 	
 	

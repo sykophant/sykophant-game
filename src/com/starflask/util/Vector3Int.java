@@ -53,7 +53,18 @@ public class Vector3Int {
 			return new Vector3f(x,y,z);
 		}
 
-		
+		public Vector3Int add(int x, int y, int z) {
+			this.x+=x;
+			this.y+=y;
+			this.z+=z;
+			
+			return this;
+		}
+
+		public Vector3Int clone()
+		{
+			return new Vector3Int(x,y,z);
+		}
 		
 		
 }
