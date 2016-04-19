@@ -29,9 +29,10 @@ public class VoxelWorld extends Entity implements VoxImporterListener{
 		this.getComponent(NodeComponent.class).attachChild( terrain.getComponent(NodeComponent.class) );
 		
 		VoxelMagicaImporter importer = new VoxelMagicaImporter(this );
-		importer.readVoxelMagicaModel("");
+		System.out.println( System.getProperty("user.home") + "\\workspace\\UltraBlackBloodDeath\\assets\\monu9.vox" );
+		importer.readVoxelMagicaModel(System.getProperty("user.home") + "\\workspace\\UltraBlackBloodDeath\\assets\\monu9.vox");
 		
-		blockConstructed(5,3,2,1,1,1,1);
+		blockConstructed( 1,1,1,1);
 		 
 		terrain.build();
 		
@@ -56,31 +57,34 @@ public class VoxelWorld extends Entity implements VoxImporterListener{
 	
 	
 	@Override
-	public void blockConstructed(int sizex, int sizey, int sizez, int x, int y, int z, int colorIndex) {
-		
-		for(int dx=0;dx<sizex;dx++)
-		{
-			for(int dy=0;dy<sizey;dy++)
-			{
-				for(int dz=0;dz<sizez;dz++)
-				{  
-					 terrain.setCubeType(x+dx,y+dy,z+dz,colorIndex);		 
-				}
-			}
-			
-		}
-		
+	public void blockConstructed(  int x, int y, int z, int colorIndex) {
+		 
+			terrain.setCubeType(x,y,z,colorIndex);	
+					 
+			 
 	}
 
+
+
+	
+	
 	@Override
 	public void setColorPalette(int[] voxcolors) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public AssetLibrary getAssetLibrary() {
-		return app.getAssetLibrary();
+
+	@Override
+	public void setStructSize(int sizex, int sizey, int sizez) {
+		// TODO Auto-generated method stub
+		
 	} 
 	
+	
+	
+	public AssetLibrary getAssetLibrary() {
+		return app.getAssetLibrary();
+	}
 	
 }

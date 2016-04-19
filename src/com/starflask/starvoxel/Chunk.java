@@ -4,6 +4,8 @@ package com.starflask.starvoxel;
 
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
  
@@ -45,9 +47,10 @@ public class Chunk extends Entity{
 	
 	// Buffers
 	private FloatBuffer vertexBuffer;
+	private IntBuffer indexBuffer;
 	private FloatBuffer normalBuffer;
 	private FloatBuffer colorBuffer;
-	//private FloatBuffer texCoordBuffer;
+	 private FloatBuffer texCoordBuffer;
 	
 	// Draw textures?
 	private boolean drawTextures;
@@ -56,6 +59,9 @@ public class Chunk extends Entity{
 	private boolean threadedBuildFinished = false;
 	
 	VoxelTerrain terrain;
+	
+	protected int numSolidBlocks = 0;
+	 
 	
 	public Chunk(VoxelTerrain terrain, Vector3Int position, Vector3Int size, int[][][] cubes, Vector3Int worldSize, Vector3f cubeSize) {
 		this.position = position;
@@ -72,7 +78,7 @@ public class Chunk extends Entity{
 	
 	public void update(float tpf)
 	{
-		if(needToRebuild)
+		if(needToRebuild && numSolidBlocks>0)
 		{
 			needToRebuild = false;
 			
@@ -103,9 +109,12 @@ public class Chunk extends Entity{
 	public void buildRenderData() {
 		// Generate vertex data
 		List<float[]> vertexArrays = new ArrayList<float[]>();
+		List<int[]> indexArrays = new ArrayList<int[]>();
 		List<float[]> normalArrays = new ArrayList<float[]>();
 		List<float[]> colorArrays = new ArrayList<float[]>();
-		//List<float[]> texCoordArrays = new ArrayList<float[]>();
+		List<float[]> texCoordArrays = new ArrayList<float[]>();
+		
+		int verticesSize = 0;
 		
 		// Generate data for each cube
 		for(int x = 0; x < size.x; x++) {
@@ -119,18 +128,39 @@ public class Chunk extends Entity{
 					
 					// Get the color and texture coords for this cube type
 					Vector4f color = getColor(type);
-					//Rectf textureCoordinates = getTextureCoordinates(type);
+					 Rectf textureCoordinates = getTextureCoordinates(type);
 					
 					Vector3f pos1 = new Vector3f(x * cubeSize.x, y * cubeSize.y, z * cubeSize.z);
 					Vector3f pos2 = pos1.clone().add(  cubeSize);
 					
+					verticesSize = vertexArrays.size()*4;
+				 	
+					int indexes[] = { 2,0,1, 1,3,2 }; //original
+					// int indexes[] = {2,1,0, 0,3,2};
+					
+					//bottom and top is z
+					//left and right is x
+					
 					// Top
 					if((position.y + y == worldSize.y - 1) || (cubes[position.x + x][position.y + y + 1][position.z + z] == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] { pos2.x, pos2.y, pos1.z,
-													pos1.x, pos2.y, pos1.z,
-													pos1.x, pos2.y, pos2.z,
-													pos2.x, pos2.y, pos2.z });
+						vertexArrays.add(new float[] { pos1.x, pos2.y, pos1.z,// BOTTOM LEFT
+													pos1.x, pos2.y, pos2.z,// BOTTOM RIGHT
+													pos2.x, pos2.y, pos1.z,//TOP LEFT
+													pos2.x, pos2.y, pos2.z });//TOP RIGHT
+						
+						
+						
+						//Indices
+						 
+						indexArrays.add(new int[] {
+								verticesSize + indexes[0],
+								verticesSize + indexes[1],
+								verticesSize + indexes[2],
+								verticesSize + indexes[3],
+								verticesSize + indexes[4],
+								verticesSize + indexes[5],
+						});
 						
 						// Normals
 						normalArrays.add(new float[] { 0.0f, 1.0f, 0.0f,
@@ -145,19 +175,35 @@ public class Chunk extends Entity{
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});*/
+														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
 					// Bottom
 					if((position.y + y == 0) || (cubes[position.x + x][position.y + y - 1][position.z + z] == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] { pos2.x, pos1.y, pos2.z,
-													pos1.x, pos1.y, pos2.z,
-													pos1.x, pos1.y, pos1.z,
-													 pos2.x, pos1.y, pos1.z });
+						vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z,// BOTTOM LEFT
+													pos2.x, pos1.y, pos1.z,// BOTTOM RIGHT
+													pos1.x, pos1.y, pos2.z,//TOP LEFT
+													pos2.x, pos1.y, pos2.z });//TOP RIGHT
+						
+						
+						
+
+						
+						
+						//Indices
+						 
+						indexArrays.add(new int[] {
+								verticesSize + indexes[0],
+								verticesSize + indexes[1],
+								verticesSize + indexes[2],
+								verticesSize + indexes[3],
+								verticesSize + indexes[4],
+								verticesSize + indexes[5],
+						});
 						
 						// Normals
 						normalArrays.add(new float[] { 0.0f, -1.0f, 0.0f,
@@ -172,19 +218,33 @@ public class Chunk extends Entity{
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});*/
+														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
 					// Front
+					 
 					if((position.z + z == worldSize.z - 1) || (cubes[position.x + x][position.y + y][position.z + z + 1] == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] { pos2.x, pos2.y, pos2.z,
-													pos1.x, pos2.y, pos2.z,
-													pos1.x, pos1.y, pos2.z,
-													pos2.x, pos1.y, pos2.z });
+						vertexArrays.add(new float[] { pos1.x, pos1.y, pos2.z, // BOTTOM LEFT
+													pos2.x, pos1.y, pos2.z,// BOTTOM RIGHT
+													pos1.x, pos2.y, pos2.z,//TOP LEFT
+													pos2.x, pos2.y, pos2.z });//TOP RIGHT
+						
+						 
+						
+						//Indices
+						
+						indexArrays.add(new int[] {
+								verticesSize + indexes[0],
+								verticesSize + indexes[1],
+								verticesSize + indexes[2],
+								verticesSize + indexes[3],
+								verticesSize + indexes[4],
+								verticesSize + indexes[5],
+						});
 						
 						// Normals
 						normalArrays.add(new float[] { 0.0f, 0.0f, 1.0f,
@@ -199,19 +259,31 @@ public class Chunk extends Entity{
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});*/
+														textureCoordinates.right, textureCoordinates.bottom});
 					}
+					
 					
 					// Back
 					if((position.z + z == 0) || (cubes[position.x + x][position.y + y][position.z + z - 1] == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] { pos1.x, pos2.y, pos1.z,
-													pos2.x, pos2.y, pos1.z,
-													pos2.x, pos1.y, pos1.z,
-													pos1.x, pos1.y, pos1.z });
+						vertexArrays.add(new float[] {  pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
+													pos1.x, pos2.y, pos1.z,// BOTTOM RIGHT
+													pos2.x, pos1.y, pos1.z,//TOP LEFT
+													pos2.x, pos2.y, pos1.z });//TOP RIGHT
+						
+						//Indices
+						 
+						indexArrays.add(new int[] {
+								verticesSize + indexes[0],
+								verticesSize + indexes[1],
+								verticesSize + indexes[2],
+								verticesSize + indexes[3],
+								verticesSize + indexes[4],
+								verticesSize + indexes[5],
+						});
 						
 						// Normals
 						normalArrays.add(new float[] { 0.0f, 0.0f, -1.0f,
@@ -226,19 +298,32 @@ public class Chunk extends Entity{
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});*/
+														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
 					// Right
 					if((position.x + x == worldSize.x - 1) || (cubes[position.x + x + 1][position.y + y][position.z + z] == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] { pos2.x, pos2.y, pos1.z,
-													pos2.x, pos2.y, pos2.z,
-													pos2.x, pos1.y, pos2.z,
-													pos2.x, pos1.y, pos1.z });
+						vertexArrays.add(new float[] { pos2.x, pos1.y, pos1.z, // BOTTOM LEFT
+													pos2.x, pos1.y, pos2.z, // BOTTOM RIGHT
+													pos2.x, pos2.y, pos1.z, //TOP LEFT
+													pos2.x, pos2.y, pos2.z }); //TOP RIGHT
+						
+		 
+						
+						//Indices
+					 
+						indexArrays.add(new int[] {
+								verticesSize + indexes[0],
+								verticesSize + indexes[1],
+								verticesSize + indexes[2],
+								verticesSize + indexes[3],
+								verticesSize + indexes[4],
+								verticesSize + indexes[5],
+						});
 						
 						// Normals
 						normalArrays.add(new float[] { 1.0f, 0.0f, 0.0f,
@@ -253,19 +338,30 @@ public class Chunk extends Entity{
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});*/
+														textureCoordinates.right, textureCoordinates.bottom});
 					}
-					
+					 
 					// Left
 					if((position.x + x == 0) || (cubes[position.x + x - 1][position.y + y][position.z + z] == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] {pos1.x, pos2.y, pos2.z,
-													pos1.x, pos2.y, pos1.z,
-													pos1.x, pos1.y, pos1.z,
-													pos1.x, pos1.y, pos2.z });
+						vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
+												pos1.x, pos2.y, pos1.z, // BOTTOM RIGHT
+												pos1.x, pos1.y, pos1.z, //TOP LEFT
+												pos1.x, pos2.y, pos2.z }); //TOP RIGHT
+						
+						//Indices
+					 
+						indexArrays.add(new int[] {
+								verticesSize + indexes[0],
+								verticesSize + indexes[1],
+								verticesSize + indexes[2],
+								verticesSize + indexes[3],
+								verticesSize + indexes[4],
+								verticesSize + indexes[5],
+						});
 						
 						// Normals
 						normalArrays.add(new float[] { -1.0f, 0.0f, 0.0f,
@@ -280,11 +376,11 @@ public class Chunk extends Entity{
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						/*texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
-														textureCoordinates.right, textureCoordinates.bottom});*/
-					}
+														textureCoordinates.right, textureCoordinates.bottom});
+					} 
 				}
 			}
 			
@@ -300,11 +396,37 @@ public class Chunk extends Entity{
 		
 		vertexBuffer = BufferUtils.createFloatBuffer(numFloats);
 		
+		System.out.println("vertices:"+numFloats);
 		for(float[] array : vertexArrays) {
+			for(float f : array)
+			{
+				System.out.println("vertex " + f);
+			}
 			vertexBuffer.put(array);
 		}
 		
 		vertexBuffer.flip();
+		
+		//create index buffer
+		  numFloats = 0;
+		
+		for(int[] array : indexArrays) {
+			numFloats += array.length;
+		}
+		indexBuffer = BufferUtils.createIntBuffer(numFloats);
+		
+		System.out.println("indices:"+numFloats);
+		for(int[] array : indexArrays) {	
+			
+			for(int i : array)
+			{
+				System.out.println("index " + i);
+			}
+			
+			indexBuffer.put(array);
+		}
+		
+		indexBuffer.flip();
 		
 		// Create the normal buffer
 		numFloats = 0;
@@ -339,19 +461,22 @@ public class Chunk extends Entity{
 		// Create the tex coord buffer
 		numFloats = 0;
 		
-	/*	for(float[] array : texCoordArrays) {
+	 	for(float[] array : texCoordArrays) {
 			numFloats += array.length;
 		}
 		
+	 	if(this.drawTextures)
+	 	{
 		texCoordBuffer = BufferUtils.createFloatBuffer(numFloats);
 		
 		for(float[] array : texCoordArrays) {
 			texCoordBuffer.put(array);
 		}
 		
-		texCoordBuffer.flip();*/
+		texCoordBuffer.flip(); 
+	 	}
 		
-		mesh = generateNewMesh(vertexBuffer,normalBuffer,colorBuffer);
+		mesh = generateNewMesh(vertexBuffer,normalBuffer,colorBuffer,indexBuffer);
 		//generateNewMesh(vertexArrays,normalArrays,colorArrays);  //this is all happening in the ChunkMeshBuilder thread so we use flags to handoff
 		
 		 if(mesh!=null)
@@ -368,14 +493,22 @@ public class Chunk extends Entity{
 	}
 	
 	
-	private Mesh generateNewMesh(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, FloatBuffer colorBuffer) {
+	private Rectf getTextureCoordinates(int type) {
+		 
+		return new Rectf(0,0,1,1);
+	}
+
+
+	private Mesh generateNewMesh(FloatBuffer vertexBuffer, FloatBuffer normalBuffer, FloatBuffer colorBuffer, IntBuffer indexBuffer) {
 		Mesh newMesh = new Mesh();
 		
 		 
-		
+			//make color a single int and use shader?
 		 newMesh.setBuffer(Type.Color, 4, VertexBuffer.Format.Float,	colorBuffer);
 		  
-		 newMesh.setBuffer(Type.Position, 3,VertexBuffer.Format.Float,  vertexBuffer );
+		 newMesh.setBuffer(Type.Position, 3,   vertexBuffer );
+		 
+		 newMesh.setBuffer(Type.Index, 3, 	indexBuffer);	 
 		 
 		 newMesh.setBuffer(Type.Normal, 3,VertexBuffer.Format.Float,  normalBuffer );
 		 

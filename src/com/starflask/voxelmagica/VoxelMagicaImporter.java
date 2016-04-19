@@ -14,15 +14,11 @@ public class VoxelMagicaImporter {
 
 	public interface VoxImporterListener
 	{
-		public void blockConstructed(final int sizex, 
-				final int sizey, 
-				final int sizez, 
-				final int x, 
-				final int y, 
-				final int z,
-				final int color);
+		public void blockConstructed(final int x, 	final int y, final int z, 	final int color_index);
 
 		public void setColorPalette(int[] voxcolors);
+
+		public void setStructSize(int sizex, int sizey, int sizez);
 	}
 
 	private VoxImporterListener listener;
@@ -97,9 +93,7 @@ public class VoxelMagicaImporter {
 	public void readVoxelMagicaModel(String filePath)
 	{	
 		 DataInputStream is = null;
-	      byte[] buffer=new byte[4];
-	      char c;
-	  
+	       
 	    	   // new input stream created
 	       
 	         try {
@@ -139,8 +133,9 @@ public class VoxelMagicaImporter {
 			int sizex = 0, sizey = 0, sizez = 0;
 			boolean subsample = false;
 
-			while (stream.available() > 0)
+			while (stream.available() > 0) //this never ends!!
 			{
+				System.out.println(  "stream " + stream.available()  );
 				// each chunk has an ID, size and child chunks
 				char[] chunkId = readChars(stream,4);
 				int chunkSize = readInt32(stream);
@@ -153,6 +148,8 @@ public class VoxelMagicaImporter {
 					sizex = readInt32(stream);
 					sizey = readInt32(stream);
 					sizez = readInt32(stream);
+					
+					listener.setStructSize( sizex,sizey,sizez );
 
 					if (sizex > 32 || sizey > 32) 
 						subsample = true;
@@ -233,9 +230,9 @@ public class VoxelMagicaImporter {
 				
 				
 				int color_index = voxelData[i].color - 1; 
+				System.out.println("block const " + i + " - " + sizex + "." + sizey +"." + sizez);   //this is weird..
+				listener.blockConstructed(  voxelData[i].x, voxelData[i].y, voxelData[i].z, color_index);
 				
-				listener.blockConstructed(sizex, sizey, sizez, voxelData[i].x, voxelData[i].y, voxelData[i].z, color_index);
-
 			}
 		}
 

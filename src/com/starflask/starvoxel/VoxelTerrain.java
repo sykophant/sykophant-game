@@ -135,20 +135,34 @@ public class VoxelTerrain extends Entity {
 				y >= 0 && y < size.y &&
 				z >= 0 && z < size.z) {
 				
+				 
+				int previous_type = cubes[x][y][z];
 				// Set the cube type
 				cubes[x][y][z] = type;
 				
+				
+					
 				// Calculate which chunk this belongs to
 				Vector3Int chunkArrayCoords = new Vector3Int(x / chunkSize.x, y / chunkSize.y, z / chunkSize.z);
+				Chunk edited_chunk = chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z];
 				
 				// Rebuild render data for the chunk
-				chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z].needToRebuild = true;
+				if(previous_type==0 && type!=0)
+				{
+					edited_chunk.numSolidBlocks++;
+				}else if(previous_type!=0 && type==0)
+				{
+					edited_chunk.numSolidBlocks--; //make sure we hide chunks who go back to 0 solid blocks
+				}
+				
+				
+				edited_chunk.needToRebuild = true;
 				
 				if( firstBuildPassComplete )
 				{					
 				 
 				// Calculate in-chunk coordinates
-				Vector3Int chunkPosition = chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z].getPosition();
+				Vector3Int chunkPosition = edited_chunk.getPosition();
 				Vector3Int inChunkPosition = new Vector3Int(x - chunkPosition.x, y - chunkPosition.y, z - chunkPosition.z);
 				
 				// Check if any nearby chunk must be rebuilt

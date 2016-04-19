@@ -76,21 +76,21 @@ public class VoxelMagicaModel implements VoxImporterListener{
 		List<BlockData> blocks = new ArrayList<BlockData>();
  
 		@Override
-		public void blockConstructed(int sizex, int sizey, int sizez, int x, int y, int z, int color) {
-			blocks.add(new BlockData( sizex,  sizey,  sizez,  x,  y,  z,  color));
+		public void blockConstructed(  int x, int y, int z, int color) {
+			blocks.add(new BlockData(    x,  y,  z,  color));
 			System.out.println("placed block ");
 			
 		}
 		
 		class BlockData
 		{
-			Vector3Int size = new Vector3Int();
+			 
 			Vector3Int loc = new Vector3Int();
 			int color;
 			
-			public BlockData(int sizex, int sizey, int sizez, int x, int y, int z, int color)
+			public BlockData(  int x, int y, int z, int color)
 			{
-				size.set(sizex,sizey,sizez);
+				 
 				loc.set(x,y,z);
 				this.color=color;
 			}
@@ -99,6 +99,12 @@ public class VoxelMagicaModel implements VoxImporterListener{
 
 		@Override
 		public void setColorPalette(int[] voxcolors) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void setStructSize(int sizex, int sizey, int sizez) {
 			// TODO Auto-generated method stub
 			
 		}
