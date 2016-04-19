@@ -59,8 +59,8 @@ public class VoxelMagicaImporter {
 		public MagicaVoxelData(DataInputStream stream, boolean subsample) throws Exception
 		{
 			x = (byte)(subsample ? stream.readByte() / 2 : stream.readByte());
-			y = (byte)(subsample ? stream.readByte() / 2 : stream.readByte());
 			z = (byte)(subsample ? stream.readByte() / 2 : stream.readByte());
+			y = (byte)(subsample ? stream.readByte() / 2 : stream.readByte());
 			color = stream.readByte() & 0xff;
 		}
 	}
@@ -206,7 +206,7 @@ public class VoxelMagicaImporter {
 					continue;
 
 				
-				//we dont want to pass each blocks integer color to the GPU..
+				/*//we dont want to pass each blocks integer color to the GPU..
 				int color = 0;
 
 				if (colors == null) // use default palette
@@ -223,7 +223,7 @@ public class VoxelMagicaImporter {
 				{
 					color = colors[voxelData[i].color - 1];
 
-				}
+				}*/
 
 				if (timelapse)
 					Thread.sleep(5);

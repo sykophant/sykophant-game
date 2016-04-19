@@ -33,7 +33,7 @@ public class GameState extends EntityAppState  {
 	       
 	      this.add(new NodeComponent() ); 
 	      
-	      this.getComponent(InputActionComponent.class).getRawStringInput().setActive(true);
+	      
 	      
 	      world = new VoxelWorld( app );
 	      world.build();
