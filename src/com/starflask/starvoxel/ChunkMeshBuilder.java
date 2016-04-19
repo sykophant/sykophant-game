@@ -217,7 +217,7 @@ public class ChunkMeshBuilder extends Thread{
 		 
 			MeshConstructionArrays arrays = new MeshConstructionArrays();
 		 
-
+			
 			/*
 			 * These are just working variables for the algorithm � almost all taken
 			 * directly from Mikola Lysenko�s javascript implementation.
@@ -479,6 +479,8 @@ public class ChunkMeshBuilder extends Thread{
 		int blockId = voxel.type;
 		
 		System.out.println("quad for type " + blockId);
+		
+		Vector3f cubeSize = chunk.getCubeSize();
 
 		/*CubeType cubetype = gamedata.cubetypes[blockId];
 
@@ -489,10 +491,10 @@ public class ChunkMeshBuilder extends Thread{
 
 		final Vector3f[] vertices = new Vector3f[4];
 
-		vertices[0] = bottomLeft.multLocal(3);
-		vertices[1] = bottomRight.multLocal(3);
-		vertices[2] = topLeft.multLocal(3);
-		vertices[3] = topRight.multLocal(3);
+		vertices[0] = bottomLeft.multLocal(3).mult(cubeSize);
+		vertices[1] = bottomRight.multLocal(3).mult(cubeSize);
+		vertices[2] = topLeft.multLocal(3).mult(cubeSize);
+		vertices[3] = topRight.multLocal(3).mult(cubeSize);
 
 		for (Vector3f v : vertices) {
 			arrays.getVertices().add(new float[]{v.x,v.y,v.z});

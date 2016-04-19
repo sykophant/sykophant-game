@@ -2,9 +2,17 @@ Console should be animated and should resize to display automagically (code like
 
 Need to make the model from magicavoxel import into chunks for the TerrainWorld class - then be built and attached to rootnode
 
-This game will be for sale but will also be open source
 
 
+## Timeline
+Add physics
+Add player movement (very similar to quake- sprint and leap around)
+
+
+
+
+Add a simple editor state to add decorations to maps ?(this is hard to do in magicavoxel) 
+OR- decoration is done because the voxels are way smaller..
 
 ## Main Menu
 
@@ -14,4 +22,14 @@ There is a ultra crazy insane metal guitar riff that plays simultaneously
 Then, that disappears and a ton of boot code appears that is really the boot code for the game (the logs) like a raspi.  It all types out in an animated way.
 A Message appears at the bottom that states "Please enter your command:"
 If a bogus command is entered, remind them in a funny random way that they can type "help" 
+
+
+
+## Bugs
+Why do the blocks seem to be rotated sideways ? (y vs z?)
+On linux, the camera is broken
+
+
+## Backburner
+This game will be for sale but will also be open source
 

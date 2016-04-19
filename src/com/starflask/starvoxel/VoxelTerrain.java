@@ -12,7 +12,7 @@ public class VoxelTerrain extends Entity {
 
 	// Sizes
 		private Vector3Int size = new Vector3Int(256,256,256);
-		private Vector3f cubeSize = new Vector3f(1f,1f,1f);
+		private Vector3f cubeSize = new Vector3f(0.33f,0.33f,0.33f);
 		
 		// Array containing cube data
 		private int[][][] cubes;
