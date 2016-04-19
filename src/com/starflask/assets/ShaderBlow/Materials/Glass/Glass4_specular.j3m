@@ -1,0 +1,9 @@
+Material My Material : ShaderBlow/MatDefs/Glass/Glass.j3md {
+     MaterialParameters {
+        MatCapSpecular : Flip ShaderBlow/Textures/Glass/glass_specular.jpg
+        RefMap : Flip ShaderBlow/Textures/Water256.dds
+        specularIntensity : 0.70000005
+     }
+    AdditionalRenderState {
+    }
+}

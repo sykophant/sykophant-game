@@ -1,0 +1,50 @@
+MaterialDef Solid Color {
+    MaterialParameters {
+        Vector4 Color
+        Texture2D ColorMap
+        
+        Vector3Array Collisions
+        FloatArray CollisionAlphas
+        
+        Float MinAlpha
+        Float MaxDistance
+        Int CollisionNum
+        Boolean Work : False
+
+        // Refraction Filter
+        Boolean DoRefract : False
+        Float Distance : 200.0
+        Texture2D Mask_Texture        
+    }
+    
+    Technique {
+        VertexShader GLSL100:   ShaderBlow/Shaders/ForceShield/Shield.vert
+        FragmentShader GLSL100: ShaderBlow/Shaders/ForceShield/Shield.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+        
+        Defines {
+            HAS_COLORMAP : ColorMap
+            HAS_COLOR : Color
+            WORK : Work
+        }
+    }
+
+Technique Refract {
+
+VertexShader GLSL100:   ShaderBlow/Filters/SimpleRefraction/Refract.vert
+FragmentShader GLSL100: ShaderBlow/Filters/SimpleRefraction/Refract.frag
+
+WorldParameters {
+WorldViewProjectionMatrix
+}
+
+Defines {
+DO_REFRACT : DoRefract
+MASK_TEXTURE : Mask_Texture
+}
+}
+
+}

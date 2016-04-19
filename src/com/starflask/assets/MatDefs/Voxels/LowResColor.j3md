@@ -1,0 +1,75 @@
+MaterialDef Default {
+
+    MaterialParameters {
+    
+    
+    
+        Color m_Ambient
+        Color m_Diffuse
+        Color m_Specular
+        
+     
+        
+     Texture2D DiffuseMap
+     
+      // Toon System
+        Boolean Toon
+        Color EdgesColor 
+        Float EdgeSize
+        Boolean Fog_Edges
+     
+    }
+
+    Technique {
+        VertexShader GLSL100:   com/starflask/assets/Shaders/Voxels/LowResColor.vert
+        FragmentShader GLSL100: com/starflask/assets/Shaders/Voxels/LowResColor.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+        }
+        
+        Defines {
+        	 DIFFUSEMAP : DiffuseMap
+        }
+    }
+    
+    
+    
+       Technique CartoonEdge {
+
+        LightMode MultiPass
+
+        VertexShader GLSL100:   com/starflask/assets/ShaderBlow/Shaders/ToonBlow/ToonBlow_Edges.vert
+        FragmentShader GLSL100: com/starflask/assets/ShaderBlow/Shaders/ToonBlow/ToonBlow_Edges.frag
+
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            NormalMatrix
+            WorldViewMatrix
+            ViewMatrix
+            CameraPosition
+            WorldMatrix
+        }
+
+        Defines {
+
+            SPHERE_MAP : SphereMap
+            FOG : FogColor
+            FOG_SKY : FogSkyBox
+            TOON_EDGES : EdgesColor
+            FOG_EDGES : Fog_Edges
+        }
+
+        RenderState {
+            FaceCull Front
+            DepthTest On
+            DepthWrite On
+        }
+    }
+    
+    
+    
+    
+    
+}

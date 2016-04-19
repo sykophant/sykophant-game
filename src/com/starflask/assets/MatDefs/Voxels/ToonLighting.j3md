@@ -1,0 +1,55 @@
+MaterialDef Phong Lighting {
+
+    MaterialParameters {
+
+        Boolean m_VertexLighting // sp impl need
+        Boolean m_LowQuality // sp impl need
+
+        Boolean m_UseAlpha // mp impl need
+        Boolean m_UseMaterialColors // sp impl need  -v-
+        Boolean m_UseVertexColor // sp/mp impl needed
+        Color m_Ambient
+        Color m_Diffuse
+        Color m_Specular
+
+        Texture2D m_DiffuseMap
+        Texture2D m_NormalMap
+        Texture2D m_SpecularMap
+        Texture2D m_ParallaxMap // sp impl need
+        Float m_Shininess
+    }
+
+    Technique {
+
+        LightMode MultiPass
+
+        VertexShader GLSL100:   Common/MatDefs/Light/Lighting.vert
+        FragmentShader GLSL100: Common/MatDefs/Light/Lighting.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            NormalMatrix
+            WorldViewMatrix
+            ViewMatrix
+        }
+
+        Defines {
+            USE_ALPHA : m_UseAlpha
+            VERTEX_COLOR : m_UseVertexColor
+            VERTEX_LIGHTING : m_VertexLighting
+            ATTENUATION : m_Attenuation
+            MATERIAL_COLORS : m_UseMaterialColors
+            LOW_QUALITY : m_LowQuality
+
+            DIFFUSEMAP : m_DiffuseMap
+            NORMALMAP : m_NormalMap
+            SPECULARMAP : m_SpecularMap
+            PARALLAXMAP : m_ParallaxMap
+        }
+
+    }
+
+   
+
+   
+}

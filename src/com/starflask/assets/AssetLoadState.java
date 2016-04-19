@@ -33,8 +33,11 @@ public class AssetLoadState extends EntityAppState   {
 		 
 		getAssetLibrary().registerAsset("console_background",  new Material(getAssetManager(),  "Common/MatDefs/Misc/Unshaded.j3md")  );
 
+		Material colorVoxels =  new Material(getAssetManager(),  "com/starflask/assets/MatDefs/Voxels/LowResColor.j3md");
+		//colorVoxels.setBoolean("UseMaterialColors", true); 
+		getAssetLibrary().registerAsset("terrain_material_untextured",  colorVoxels );
 		
-		getAssetLibrary().registerAsset("terrain_material",  new Material(getAssetManager(),  "Common/MatDefs/Light/Lighting.j3md")  );
+		getAssetLibrary().registerAsset("terrain_material_textured",  new Material(getAssetManager(),  "com/starflask/assets/MatDefs/Voxels/LowResTex.j3md")  );
 
 	}
 

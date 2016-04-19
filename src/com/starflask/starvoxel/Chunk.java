@@ -8,7 +8,8 @@ import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
- 
+import java.util.Random;
+
 import org.lwjgl.opengl.GL11;
 
 import com.badlogic.ashley.core.Entity;
@@ -27,6 +28,7 @@ import com.starflask.assets.AssetLibrary;
 import com.starflask.renderable.NodeComponent;
 import com.starflask.util.Vector3;
 import com.starflask.util.Vector3Int;
+import com.starflask.util.noise.PerlinNoiseGenerator;
 import com.starflask.voxelmagica.VoxelMagicaImporter;
  
  
@@ -43,7 +45,10 @@ public class Chunk extends Entity{
 	private Vector3f cubeSize;
 	
 	// GL list for slightly faster rendering
-	private int glListIndex = 0;
+	//private int glListIndex = 0;
+	
+	private boolean greedy = true;
+	private boolean noiseBased = false;
 	
 	// Buffers
 	/*private FloatBuffer vertexBuffer;
@@ -174,8 +179,18 @@ public class Chunk extends Entity{
 		mesh.updateBound();
 		
 		Geometry geo = new Geometry("Chunk", mesh); // using our custom mesh object
-		Material mat = getAssetLibrary().findMaterial("terrain_material");
-		geo.setMaterial(mat);
+		
+		if(this.drawTextures)
+		{
+			Material mat = getAssetLibrary().findMaterial("terrain_material_textured");
+			geo.setMaterial(mat);
+		}
+		else
+		{
+			Material mat = getAssetLibrary().findMaterial("terrain_material_untextured");
+			geo.setMaterial(mat);
+		}
+		
 		getNode().attachChild(geo) ;
 		
 		
@@ -200,21 +215,9 @@ public class Chunk extends Entity{
 	}
 
 	public Vector4f getColor(int type) {
+	 
 		
-		
-		/*colors = VoxelMagicaImporter.VoxImporterListener
-		switch(type) {
-		case CubeType.DIRT:
-			return new Vector4f(0.35f, 0.15f, 0.0f, 1.0f);
-		case CubeType.GRASS:
-			return new Vector4f(0.0f, 0.3f, 0.00f, 1.0f);
-		case CubeType.STONE:
-			return new Vector4f(0.3f, 0.3f, 0.3f, 1.0f);
-		case CubeType.WATER:
-			return new Vector4f(0.0f, 0.2f, 0.7f, 0.6f);
-		}*/
-		
-		return new Vector4f(0.35f, 0.15f, 0.0f, 1.0f);
+		return terrain.getColorPalette().getColorOfBlockType(type); 
 	}
 	
 /*	public Rectf getTextureCoordinates(char type) {
@@ -283,7 +286,7 @@ public class Chunk extends Entity{
 	}
 
 
-	public int[][][] getCubes() {
+	private int[][][] getCubes() {
 		 
 		return cubes;
 	}
@@ -312,17 +315,76 @@ public class Chunk extends Entity{
 		 
 		
 		if(withinWorldBounds(worldPos))
-		{
+		{	
 			int type = cubes[worldPos.x][worldPos.y][worldPos.z];
-			return type;
+			if(noiseBased && type > 0)
+			{
+				return blockTypeFromNoise(x,y,z);
+			}else{
+				return type;
+			}
 		}
 		return 0;
+	}
+
+	/*
+	 * Return perlin value from this coordinate
+	 * Decorative blocks are 50 to 70
+	 */
+	private int blockTypeFromNoise(int x, int y, int z) {
+		
+	//	public static double getNoise(double x, double y, double z, int octaves, double frequency, double amplitude) {
+	  //      return instance.noise(x, y, z, octaves, frequency, amplitude);
+	  //  }
+		
+		int noise_value = (int) perlinNoise.getNoise(x,y,z, 4,4,100);
+		
+		if(noise_value>80 )
+		{
+			int decoration_type_id = noise_value - 80;
+		
+			return 50 + decoration_type_id;
+		}
+				
+		return 0;
+		
 	}
 
 
 	private boolean withinWorldBounds(Vector3Int pos) {
 		 
 		return pos.x>0 && pos.x<worldSize.x && pos.y>0 && pos.y<worldSize.y && pos.z>0 && pos.z<worldSize.z;
+	}
+
+	/*
+	 * Use greedy rendering?  Cant use textures if so!  
+	 */
+	public boolean isGreedy() {
+	 
+		return greedy;
+	}
+
+
+	public void setGreedy(boolean b) {
+		greedy = b;
+		
+	}
+
+
+	public void setNoiseBased(boolean b) {
+		noiseBased = b;
+		 
+	}
+
+	PerlinNoiseGenerator perlinNoise;
+	public void generateNoise() {
+		 perlinNoise = new PerlinNoiseGenerator( getDeterministicSeed() ); 
+		
+	}
+
+
+	private Random getDeterministicSeed() {
+		 return new Random(this.numSolidBlocks);
 	}
 	
 	

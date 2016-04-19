@@ -10,5 +10,6 @@ public class MeshConstructionBuffers {
 	public FloatBuffer normalBuffer;
 	public IntBuffer indexBuffer;
 	public FloatBuffer vertexBuffer;
-
+	
+	 
 }

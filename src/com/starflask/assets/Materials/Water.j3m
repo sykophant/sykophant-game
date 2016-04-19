@@ -1,0 +1,45 @@
+Material My Material : Common/MatDefs/Water/Water.j3md {
+     MaterialParameters {
+       // DiffuseMap : Flip ShaderBlow/Textures/matcaps/met2.png
+       // Nor_Inv_Y : false
+       // Nor_Inv_X : false
+       // Nor_Inv_Z : false
+       // FogColor : 0.8 0.8 0.8 19.0
+       /// Multiply_Color : 1.0 1.0 0.2 1.0
+       
+       NumSamples : 10
+       NumSamplesDepth : 10
+       FoamMap : Flip Common/MatDefs/Water/foam.jpg
+        NormalMap : Flip ShaderBlow/Textures/matcaps/met2.png
+         ReflectionMap : Flip ShaderBlow/Textures/matcaps/met2.png
+        HeightMap : Flip Common/MatDefs/Water/heightmap.jpg
+        Texture : Flip ShaderBlow/Textures/matcaps/met2.png
+        DepthTexture     : Flip ShaderBlow/Textures/matcaps/met2.png
+        
+            
+        WaterTransparency : 1
+       MaxAmplitude : 0.1
+      
+
+         //ShoreHardness = 0.2
+      //  FoamHardness = 1
+       // RefractionStrength = 1
+       // WaveScale = 1
+       
+      //  SunScale = 0.5
+      // ColorExtinction : 0.2 0.2 0.7 0.5
+        Shininess : 0.1
+         WaterColor : 0.2 0.2 0.7 0.5
+         DeepWaterColor : 0.2 0.2 0.7 0.5
+        WindDirection : 0.3 0.3
+
+        UseRipples : false
+        UseHQShoreline : false
+         UseSpecular : false
+        UseFoam : false
+         UseRefraction : false
+      
+     }
+    AdditionalRenderState {
+    }
+}

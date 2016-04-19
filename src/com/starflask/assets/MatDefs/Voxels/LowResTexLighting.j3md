@@ -1,0 +1,52 @@
+MaterialDef Default {
+
+    MaterialParameters {
+    	
+   
+    
+        Color m_Ambient
+        Color m_Diffuse
+        Color m_Specular
+        
+        
+        Texture2D FogMap
+    	 Texture2D DiffuseMap
+     
+      // Toon System
+      //  Boolean Toon
+      //  Color EdgesColor 
+      //  Float EdgeSize
+      //  Boolean Fog_Edges
+     
+    }
+
+    Technique {
+    
+    	//enable lighting
+       LightMode MultiPass
+     
+        VertexShader GLSL100:   Shaders/Voxels/LowResTexLighting.vert
+        FragmentShader GLSL100: Shaders/Voxels/LowResTexLighting.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            NormalMatrix
+            WorldViewMatrix
+            ViewMatrix
+            CameraPosition
+            WorldMatrix
+        }
+        
+        Defines {
+        	 DIFFUSEMAP : DiffuseMap
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+}

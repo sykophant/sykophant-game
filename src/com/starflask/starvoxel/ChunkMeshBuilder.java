@@ -139,7 +139,7 @@ public class ChunkMeshBuilder extends Thread{
 			
 			try{
 				 
-				 buildRenderData(chunk, true); 
+				 buildRenderData(chunk); 
 			 		
 			}catch(Exception e)
 			{
@@ -152,28 +152,29 @@ public class ChunkMeshBuilder extends Thread{
 	 
 
 
-		private void buildRenderData(Chunk chunk, boolean greedy ) {
-			 MeshConstructionBuffers buffers = new MeshConstructionBuffers();
+		private void buildRenderData(Chunk chunk  ) {
+			 MeshConstructionBuffers buffers = null;
 			
-			 if(greedy)
+			 if(chunk.isGreedy())
 			 {
-				   buildGreedyRenderData(chunk,buffers);  //only good for nontextured since it connects adjacent faces
+				 buffers =  buildGreedyRenderData(chunk );  //only good for nontextured since it connects adjacent faces
 			 }else
 			 {
-				   buildStandardRenderData(chunk,buffers);
+				 buffers =  buildStandardRenderData(chunk );
 			 }
 			 
 			 
-			 
+			 	if(buffers != null)
+			 	{
 				
 				Mesh mesh = generateNewMesh( buffers );
-				//generateNewMesh(vertexArrays,normalArrays,colorArrays);  //this is all happening in the ChunkMeshBuilder thread so we use flags to handoff
 				
 				 if(mesh!=null)
 				 {
 					 chunk.setMesh(mesh);
 					 chunk.threadedBuildFinished = true;
 				 }
+			 	}
 			 
 		}
 
@@ -212,7 +213,7 @@ public class ChunkMeshBuilder extends Thread{
 		
 	}
 
-	public static MeshConstructionBuffers buildGreedyRenderData(Chunk chunk, MeshConstructionBuffers buffers) {
+	public static MeshConstructionBuffers buildGreedyRenderData(Chunk chunk ) {
 		 
 			MeshConstructionArrays arrays = new MeshConstructionArrays();
 		 
@@ -410,7 +411,7 @@ public class ChunkMeshBuilder extends Thread{
 										 */
 										//boolean hasQuad = true;
 										
-										 quad(arrays,  new Vector3f(x[0], x[1], x[2]), new Vector3f(x[0] + du[0], x[1] + du[1], x[2]
+										 quad(chunk, arrays,  new Vector3f(x[0], x[1], x[2]), new Vector3f(x[0] + du[0], x[1] + du[1], x[2]
 												+ du[2]), new Vector3f(x[0] + du[0] + dv[0], x[1] + du[1] + dv[1], x[2]
 												+ du[2] + dv[2]), new Vector3f(x[0] + dv[0], x[1] + dv[1], x[2] + dv[2]),
 												w, h, mask[n], backFace);
@@ -443,9 +444,8 @@ public class ChunkMeshBuilder extends Thread{
 					}
 				}
 			}
-
-		
-		 return arrays -> buffers;
+			
+		 return arrays.toMeshBuffers(chunk.drawTextures);
 	}
 	
 	/**
@@ -473,10 +473,12 @@ public class ChunkMeshBuilder extends Thread{
 
 	//boolean defQuad = false;
 
-	public static void quad(MeshConstructionArrays arrays, final Vector3f bottomLeft, final Vector3f topLeft, final Vector3f topRight, final Vector3f bottomRight,
+	public static void quad(Chunk chunk, MeshConstructionArrays arrays, final Vector3f bottomLeft, final Vector3f topLeft, final Vector3f topRight, final Vector3f bottomRight,
 			final int width, final int height, final VoxelFace voxel, final boolean backFace) {
 
 		int blockId = voxel.type;
+		
+		System.out.println("quad for type " + blockId);
 
 		/*CubeType cubetype = gamedata.cubetypes[blockId];
 
@@ -552,8 +554,8 @@ public class ChunkMeshBuilder extends Thread{
 		Vector4f topRightColor = terrain.getLightAverage(cubetypeColor, cubetypeSpecular, 1f, absX + 1, absY + 1,
 				absZ + 1);*/
 		
-		Vector4f topRightColor = new Vector4f(1,0.6f,0.7f,1);
-
+		Vector4f topRightColor = chunk.getColor(blockId);
+		System.out.println("quad color " + topRightColor);
 		arrays.getColors().add(new float[]{
 				topRightColor.x,topRightColor.y,topRightColor.z,topRightColor.w,
 				topRightColor.x,topRightColor.y,topRightColor.z,topRightColor.w,
@@ -649,18 +651,20 @@ public class ChunkMeshBuilder extends Thread{
 	}
 
 	 
-	public static MeshConstructionBuffers buildStandardRenderData(Chunk chunk, MeshConstructionBuffers buffers) {
+	public static MeshConstructionBuffers buildStandardRenderData(Chunk chunk ) {
 		// Generate vertex data
-		List<float[]> vertexArrays = new ArrayList<float[]>();
+		/*List<float[]> vertexArrays = new ArrayList<float[]>();
 		List<int[]> indexArrays = new ArrayList<int[]>();
 		List<float[]> normalArrays = new ArrayList<float[]>();
 		List<float[]> colorArrays = new ArrayList<float[]>();
-		List<float[]> texCoordArrays = new ArrayList<float[]>();
+		List<float[]> texCoordArrays = new ArrayList<float[]>();*/
+		
+		MeshConstructionArrays arrays = new MeshConstructionArrays();
 		
 		
 		Vector3Int size = chunk.getSize();
 		Vector3Int position = chunk.getPosition();
-		int[][][] cubes = chunk.getCubes();
+		//int[][][] cubes = chunk.getCubes();
 		Vector3f cubeSize = chunk.getCubeSize();
 		Vector3Int worldSize = chunk.getWorldSize();
 		
@@ -670,7 +674,8 @@ public class ChunkMeshBuilder extends Thread{
 		for(int x = 0; x < size.x; x++) {
 			for(int y = 0; y < size.y; y++) {
 				for(int z = 0; z < size.z; z++) {
-					int type = cubes[position.x + x][position.y + y][position.z + z];
+					//int type = cubes[position.x + x][position.y + y][position.z + z];
+					int type = chunk.getBlockTypeFromLocalPosition(x, y, z);
 					
 					// Skip this cube if the type is EMPTY
 					if(type == CubeType.EMPTY)
@@ -683,7 +688,7 @@ public class ChunkMeshBuilder extends Thread{
 					Vector3f pos1 = new Vector3f(x * cubeSize.x, y * cubeSize.y, z * cubeSize.z);
 					Vector3f pos2 = pos1.clone().add(  cubeSize);
 					
-					verticesSize = vertexArrays.size()*4;
+					verticesSize = arrays.vertexArrays.size()*4;
 				 	
 					int indexes[] = { 2,0,1, 1,3,2 }; //original
 					// int indexes[] = {2,1,0, 0,3,2};
@@ -692,9 +697,9 @@ public class ChunkMeshBuilder extends Thread{
 					//left and right is x
 					
 					// Top
-					if((position.y + y == worldSize.y - 1) || (cubes[position.x + x][position.y + y + 1][position.z + z] == 0)) {
+					if((position.y + y == worldSize.y - 1) || ( chunk.getBlockTypeFromLocalPosition(position.x + x,position.y + y + 1,position.z + z) == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] { pos1.x, pos2.y, pos1.z,// BOTTOM LEFT
+						arrays.vertexArrays.add(new float[] { pos1.x, pos2.y, pos1.z,// BOTTOM LEFT
 													pos1.x, pos2.y, pos2.z,// BOTTOM RIGHT
 													pos2.x, pos2.y, pos1.z,//TOP LEFT
 													pos2.x, pos2.y, pos2.z });//TOP RIGHT
@@ -703,7 +708,7 @@ public class ChunkMeshBuilder extends Thread{
 						
 						//Indices
 						 
-						indexArrays.add(new int[] {
+						arrays.indexArrays.add(new int[] {
 								verticesSize + indexes[0],
 								verticesSize + indexes[1],
 								verticesSize + indexes[2],
@@ -713,32 +718,32 @@ public class ChunkMeshBuilder extends Thread{
 						});
 						
 						// Normals
-						normalArrays.add(new float[] { 0.0f, 1.0f, 0.0f,
+						arrays.normalArrays.add(new float[] { 0.0f, 1.0f, 0.0f,
 													0.0f, 1.0f, 0.0f,
 													0.0f, 1.0f, 0.0f,
 													0.0f, 1.0f, 0.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
+						arrays.colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						arrays.texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
-					verticesSize = vertexArrays.size()*4;
+					verticesSize = arrays.vertexArrays.size()*4;
 					
 					// Bottom
-					if((position.y + y == 0) || (cubes[position.x + x][position.y + y - 1][position.z + z] == 0)) {
+					if((position.y + y == 0) || ( chunk.getBlockTypeFromLocalPosition(position.x + x,position.y + y - 1,position.z + z) == 0)) {
 						System.out.println("rendering bottom ");
 						
 						// Vertex data
-						vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z,// BOTTOM LEFT
+						arrays.vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z,// BOTTOM LEFT
 													pos2.x, pos1.y, pos1.z,// BOTTOM RIGHT
 													pos1.x, pos1.y, pos2.z,//TOP LEFT
 													pos2.x, pos1.y, pos2.z });//TOP RIGHT
@@ -750,7 +755,7 @@ public class ChunkMeshBuilder extends Thread{
 						
 						//Indices
 						 
-						indexArrays.add(new int[] {
+						arrays.indexArrays.add(new int[] {
 								verticesSize + indexes[0],
 								verticesSize + indexes[1],
 								verticesSize + indexes[2],
@@ -760,33 +765,33 @@ public class ChunkMeshBuilder extends Thread{
 						});
 						
 						// Normals
-						normalArrays.add(new float[] { 0.0f, -1.0f, 0.0f,
+						arrays.normalArrays.add(new float[] { 0.0f, -1.0f, 0.0f,
 													0.0f, -1.0f, 0.0f,
 													0.0f, -1.0f, 0.0f,
 													0.0f, -1.0f, 0.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
+						arrays.colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						arrays.texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
-					verticesSize = vertexArrays.size()*4;
+					verticesSize = arrays.vertexArrays.size()*4;
 					
 					// Front
 					
-					if((position.z + z == worldSize.z - 1) || (cubes[position.x + x][position.y + y][position.z + z + 1] == 0)) {
+					if((position.z + z == worldSize.z - 1) || (chunk.getBlockTypeFromLocalPosition(position.x + x,position.y + y ,position.z + z + 1) == 0)) {
 						System.out.println("rendering front ");
 						
 						// Vertex data
-						vertexArrays.add(new float[] { pos1.x, pos1.y, pos2.z, // BOTTOM LEFT
+						arrays.vertexArrays.add(new float[] { pos1.x, pos1.y, pos2.z, // BOTTOM LEFT
 													pos2.x, pos1.y, pos2.z,// BOTTOM RIGHT
 													pos1.x, pos2.y, pos2.z,//TOP LEFT
 													pos2.x, pos2.y, pos2.z });//TOP RIGHT
@@ -795,7 +800,7 @@ public class ChunkMeshBuilder extends Thread{
 						
 						//Indices
 						
-						indexArrays.add(new int[] {
+						arrays.indexArrays.add(new int[] {
 								verticesSize + indexes[0],
 								verticesSize + indexes[1],
 								verticesSize + indexes[2],
@@ -805,39 +810,39 @@ public class ChunkMeshBuilder extends Thread{
 						});
 						
 						// Normals
-						normalArrays.add(new float[] { 0.0f, 0.0f, 1.0f,
+						arrays.normalArrays.add(new float[] { 0.0f, 0.0f, 1.0f,
 													0.0f, 0.0f, 1.0f,
 													0.0f, 0.0f, 1.0f,
 													0.0f, 0.0f, 1.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
+						arrays.colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						arrays.texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
-					verticesSize = vertexArrays.size()*4;
+					verticesSize = arrays.vertexArrays.size()*4;
 					
 					// Back
-					if((position.z + z == 0) || (cubes[position.x + x][position.y + y][position.z + z - 1] == 0)) {
+					if((position.z + z == 0) || (chunk.getBlockTypeFromLocalPosition(position.x + x,position.y + y ,position.z + z - 1) == 0)) {
 						System.out.println("rendering back ");
 						
 						// Vertex data
-						vertexArrays.add(new float[] {  pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
+						arrays.vertexArrays.add(new float[] {  pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
 													pos1.x, pos2.y, pos1.z,// BOTTOM RIGHT
 													pos2.x, pos1.y, pos1.z,//TOP LEFT
 													pos2.x, pos2.y, pos1.z });//TOP RIGHT
 						
 						//Indices
 						 
-						indexArrays.add(new int[] {
+						arrays.indexArrays.add(new int[] {
 								verticesSize + indexes[0],
 								verticesSize + indexes[1],
 								verticesSize + indexes[2],
@@ -847,30 +852,30 @@ public class ChunkMeshBuilder extends Thread{
 						});
 						
 						// Normals
-						normalArrays.add(new float[] { 0.0f, 0.0f, -1.0f,
+						arrays.normalArrays.add(new float[] { 0.0f, 0.0f, -1.0f,
 													0.0f, 0.0f, -1.0f,
 													0.0f, 0.0f, -1.0f,
 													0.0f, 0.0f, -1.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
+						arrays.colorArrays.add(new float[] { color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						arrays.texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
-					verticesSize = vertexArrays.size()*4;
+					verticesSize = arrays.vertexArrays.size()*4;
 					
 					// Right
-					if((position.x + x == worldSize.x - 1) || (cubes[position.x + x + 1][position.y + y][position.z + z] == 0)) {
+					if((position.x + x == worldSize.x - 1) || (chunk.getBlockTypeFromLocalPosition(position.x + x + 1,position.y + y ,position.z + z ) == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] { pos2.x, pos1.y, pos1.z, // BOTTOM LEFT
+						arrays.vertexArrays.add(new float[] { pos2.x, pos1.y, pos1.z, // BOTTOM LEFT
 													pos2.x, pos2.y, pos1.z, // BOTTOM RIGHT
 													pos2.x, pos1.y, pos2.z, //TOP LEFT
 													pos2.x, pos2.y, pos2.z }); //TOP RIGHT
@@ -879,7 +884,7 @@ public class ChunkMeshBuilder extends Thread{
 						
 						//Indices
 					 
-						indexArrays.add(new int[] {
+						arrays.indexArrays.add(new int[] {
 								verticesSize + indexes[0],
 								verticesSize + indexes[1],
 								verticesSize + indexes[2],
@@ -889,37 +894,37 @@ public class ChunkMeshBuilder extends Thread{
 						});
 						
 						// Normals
-						normalArrays.add(new float[] { 1.0f, 0.0f, 0.0f,
+						arrays.normalArrays.add(new float[] { 1.0f, 0.0f, 0.0f,
 													1.0f, 0.0f, 0.0f,
 													1.0f, 0.0f, 0.0f,
 													1.0f, 0.0f, 0.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w, //w is alpha
+						arrays.colorArrays.add(new float[] { color.x, color.y, color.z, color.w, //w is alpha
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						arrays.texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					 
-					 verticesSize = vertexArrays.size()*4;
+					 verticesSize = arrays.vertexArrays.size()*4;
 					  
 					// Left
-					if((position.x + x == 0) || (cubes[position.x + x - 1][position.y + y][position.z + z] == 0)) {
+					if((position.x + x == 0) || (chunk.getBlockTypeFromLocalPosition(position.x + x - 1,position.y + y ,position.z + z ) == 0)) {
 						// Vertex data
-						vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
+						arrays.vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
 													pos1.x, pos1.y, pos2.z, // BOTTOM RIGHT
 													pos1.x, pos2.y, pos1.z, //TOP LEFT
 													pos1.x, pos2.y, pos2.z }); //TOP RIGHT
 						
 						//Indices
 					 
-						indexArrays.add(new int[] {
+						arrays.indexArrays.add(new int[] {
 								verticesSize + indexes[0],
 								verticesSize + indexes[1],
 								verticesSize + indexes[2],
@@ -929,19 +934,19 @@ public class ChunkMeshBuilder extends Thread{
 						});
 						
 						// Normals
-						normalArrays.add(new float[] { -1.0f, 0.0f, 0.0f,
+						arrays.normalArrays.add(new float[] { -1.0f, 0.0f, 0.0f,
 													-1.0f, 0.0f, 0.0f,
 													-1.0f, 0.0f, 0.0f,
 													-1.0f, 0.0f, 0.0f});
 						
 						// Colors
-						colorArrays.add(new float[] { color.x, color.y, color.z, color.w, //w is alpha
+						arrays.colorArrays.add(new float[] { color.x, color.y, color.z, color.w, //w is alpha
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w,
 													color.x, color.y, color.z, color.w});
 						
 						// Texture coordinates
-						texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
+						arrays.texCoordArrays.add(new float[] { textureCoordinates.right, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
 														textureCoordinates.right, textureCoordinates.bottom});
@@ -951,18 +956,22 @@ public class ChunkMeshBuilder extends Thread{
 			
 			
 		}
+		
+		
+		 return arrays.toMeshBuffers(chunk.drawTextures);
 
+		 /*
 		// Create the float vertex buffer
 		int numFloats = 0;
 		
-		for(float[] array : vertexArrays) {
+		for(float[] array : arrays.vertexArrays) {
 			numFloats += array.length;
 		}
 		
 		buffers.vertexBuffer = BufferUtils.createFloatBuffer(numFloats);
 		
 		System.out.println("vertices:"+numFloats);
-		for(float[] array : vertexArrays) {
+		for(float[] array : arrays.vertexArrays) {
 			for(float f : array)
 			{
 				System.out.println("vertex " + f);
@@ -975,13 +984,13 @@ public class ChunkMeshBuilder extends Thread{
 		//create index buffer
 		  numFloats = 0;
 		
-		for(int[] array : indexArrays) {
+		for(int[] array : arrays.indexArrays) {
 			numFloats += array.length;
 		}
 		buffers.indexBuffer = BufferUtils.createIntBuffer(numFloats);
 		
 		System.out.println("indices:"+numFloats);
-		for(int[] array : indexArrays) {	
+		for(int[] array : arrays.indexArrays) {	
 			
 			for(int i : array)
 			{
@@ -996,13 +1005,13 @@ public class ChunkMeshBuilder extends Thread{
 		// Create the normal buffer
 		numFloats = 0;
 		
-		for(float[] array : normalArrays) {
+		for(float[] array : arrays.normalArrays) {
 			numFloats += array.length;
 		}
 		
 		buffers.normalBuffer = BufferUtils.createFloatBuffer(numFloats);
 		
-		for(float[] array : normalArrays) {
+		for(float[] array : arrays.normalArrays) {
 			buffers.normalBuffer.put(array);
 		}
 		
@@ -1011,13 +1020,13 @@ public class ChunkMeshBuilder extends Thread{
 		// Create the color buffer
 		numFloats = 0;
 		
-		for(float[] array : colorArrays) {
+		for(float[] array : arrays.colorArrays) {
 			numFloats += array.length;
 		}
 		
 		buffers.colorBuffer = BufferUtils.createFloatBuffer(numFloats);
 		
-		for(float[] array : colorArrays) {
+		for(float[] array : arrays.colorArrays) {
 			buffers.colorBuffer.put(array);
 		}
 		
@@ -1026,7 +1035,7 @@ public class ChunkMeshBuilder extends Thread{
 		// Create the tex coord buffer
 		numFloats = 0;
 		
-	 	for(float[] array : texCoordArrays) {
+	 	for(float[] array : arrays.texCoordArrays) {
 			numFloats += array.length;
 		}
 		
@@ -1034,16 +1043,16 @@ public class ChunkMeshBuilder extends Thread{
 	 	{
 	 		buffers.texCoordBuffer = BufferUtils.createFloatBuffer(numFloats);
 		
-		for(float[] array : texCoordArrays) {
+		for(float[] array : arrays.texCoordArrays) {
 			buffers.texCoordBuffer.put(array);
 		}
 		
 		buffers.texCoordBuffer.flip(); 
 	 	}
+	 	*/
 	 	
 	 	
-	 	return buffers;
-		
+	 	 
 	 	
 		/*
 		// Delete old list (it will be recreated in the render method)

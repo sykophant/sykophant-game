@@ -1,0 +1,21 @@
+MaterialDef Cube Texture {
+    MaterialParameters {
+        TextureCubeMap Texture
+        Boolean SphereMap
+    }
+    Technique {
+        VertexShader GLSL100 :   MatDefs/Light/Reflection.vert
+        FragmentShader GLSL100 : MatDefs/Light/Reflection.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            WorldMatrix
+            NormalMatrix
+            CameraPosition
+        }
+
+        Defines {
+            SPHERE_MAP : SphereMap
+        }
+    }
+}

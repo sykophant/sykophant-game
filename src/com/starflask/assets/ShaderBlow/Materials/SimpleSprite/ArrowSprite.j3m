@@ -1,0 +1,12 @@
+Material My Material : ShaderBlow/MatDefs/SimpleSprite/SimpleSprite.j3md {
+     MaterialParameters {
+        AniTexMap : Flip Repeat ShaderBlow/Textures/SimpleSprite/ArrowSprite_1.png
+        numTilesU : 8
+        numTilesV : 1
+        Speed : 15
+     }
+    AdditionalRenderState {
+      Blend Alpha
+      Wireframe Off
+    }
+}

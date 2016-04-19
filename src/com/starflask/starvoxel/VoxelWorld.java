@@ -33,8 +33,8 @@ public class VoxelWorld extends Entity implements VoxImporterListener{
 		this.getComponent(NodeComponent.class).attachChild( terrain.getComponent(NodeComponent.class) );
 		
 		VoxelMagicaImporter importer = new VoxelMagicaImporter(this );
-		System.out.println( System.getProperty("user.home") + "\\workspace\\UltraBlackBloodDeath\\assets\\monu9.vox" );
-		//importer.readVoxelMagicaModel(System.getProperty("user.home") + "\\workspace\\UltraBlackBloodDeath\\assets\\monu9.vox");
+		System.out.println( System.getProperty("user.home") + "/git/UltraBlackBloodDeath/assets/monu9.vox" );
+		 importer.readVoxelMagicaModel(System.getProperty("user.home") + "/git/UltraBlackBloodDeath/assets/monu9.vox");
 		
 		blockConstructed( 1,1,1,1);
 		blockConstructed( 1,2,1,1);
@@ -88,7 +88,7 @@ public class VoxelWorld extends Entity implements VoxImporterListener{
 	
 	@Override
 	public void setColorPalette(int[] voxcolors) {
-		// TODO Auto-generated method stub
+		terrain.setColorPalette(voxcolors);
 		
 	}
 

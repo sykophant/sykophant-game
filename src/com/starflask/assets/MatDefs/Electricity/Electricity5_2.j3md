@@ -1,0 +1,38 @@
+// author: cvlad
+
+MaterialDef Electricity5 {
+
+    MaterialParameters {
+        Float speed
+        Float width
+        Float noiseAmount
+        Float thickness
+        Float layer
+        Color color
+        Texture2D noise
+    }
+
+    Technique {
+
+        LightMode Disable
+
+        VertexShader GLSL100:   ShaderBlow/Shaders/Electricity/Electricity5.vert
+        FragmentShader GLSL100: ShaderBlow/Shaders/Electricity/Electricity5_2.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            WorldViewMatrixInverse
+            Time
+        }
+
+        Defines {
+        }
+
+        RenderState {
+            DepthTest On
+            DepthWrite Off
+            ColorWrite On
+        }
+    }
+}
+    

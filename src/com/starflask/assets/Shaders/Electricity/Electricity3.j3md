@@ -1,0 +1,38 @@
+// author: cvlad
+
+MaterialDef Electricity3 {
+
+    MaterialParameters {
+        Float speed
+        Float fallOff
+        Float width
+        Float noiseAmount
+        Vector2 texScale
+        Color color
+        Texture2D noise
+    }
+
+    Technique {
+
+        LightMode Disable
+
+        VertexShader GLSL100:   ShaderBlow/Shaders/Electricity/Electricity3.vert
+        FragmentShader GLSL100: ShaderBlow/Shaders/Electricity/Electricity3.frag
+
+        WorldParameters {
+            WorldViewProjectionMatrix
+            WorldViewMatrixInverse
+            Time
+        }
+
+        Defines {
+        }
+
+        RenderState {
+            DepthTest On
+            DepthWrite Off
+            ColorWrite On
+        }
+    }
+}
+    

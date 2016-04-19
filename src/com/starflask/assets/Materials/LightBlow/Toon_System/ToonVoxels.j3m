@@ -1,0 +1,14 @@
+Material ToonVoxel : MatDefs/Voxels/LowResColor.j3md { 
+  MaterialParameters {
+     
+      //m_VertexLighting : true
+      //m_LowQuality : true
+
+      //m_UseAlpha  : false
+      //m_UseMaterialColors : false
+      //m_UseVertexColor : true
+
+  }
+  
+  
+}

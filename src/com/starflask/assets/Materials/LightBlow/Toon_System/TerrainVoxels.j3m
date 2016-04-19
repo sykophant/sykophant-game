@@ -1,0 +1,12 @@
+Material TerrainVoxel : MatDefs/Voxels/LowResTex.j3md { 
+  MaterialParameters {
+    
+	 //Toon : false
+ 	 // EdgeSize : 0.0
+     // EdgesColor : 0.0 0.0 0.0 1.0
+     //Fog_Edges : false
+		
+		
+
+  }
+}

@@ -1,15 +1,15 @@
 package com.starflask.states;
 
 import com.jme3.app.Application;
-import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
-import com.starflask.MonkeyApplication;
 import com.starflask.peripherals.InputActionComponent;
 import com.starflask.peripherals.InputActionExecutor;
 import com.starflask.peripherals.InputActionType;
 import com.starflask.renderable.GuiNodeComponent;
-import com.starflask.terminal.*;
-import com.starflask.util.EntityAppState; 
+import com.starflask.terminal.TerminalConsoleInterface;
+import com.starflask.terminal.TerminalMenu;
+import com.starflask.terminal.TerminalRenderer;
+import com.starflask.util.EntityAppState;
 
 public class TerminalState extends EntityAppState implements InputActionExecutor{
 

@@ -18,13 +18,16 @@ public class VoxelTerrain extends Entity {
 		private int[][][] cubes;
 		
 		// Chunks (used to render the cubes)
-		private Chunk[][][] chunks;
+		private Chunk[][][] base_chunks;
+		private Chunk[][][] decorative_chunks;
 		private Vector3Int chunkArraySize;
 		private Vector3Int chunkSize = new Vector3Int(16,16,16);
 		
 		VoxelWorld world;
 		
 		ChunkMeshBuilder chunkMeshBuilder;
+		
+		ColorPalette colorPalette;
 		
 		public VoxelTerrain(VoxelWorld world)
 		{
@@ -36,6 +39,7 @@ public class VoxelTerrain extends Entity {
 			
 			initChunks(); 
 			
+			colorPalette = new ColorPalette();
 			
 			
 		}
@@ -55,11 +59,12 @@ public class VoxelTerrain extends Entity {
 		public void update(float tpf)
 		{
 			
-			
+			//maybe only do this once every few frames?
 			for(int x = 0; x < chunkArraySize.x; x++) {
 				for(int y = 0; y < chunkArraySize.y; y++) {
 					for(int z = 0; z < chunkArraySize.z; z++) {
-						chunks[x][y][z].update(tpf);
+						base_chunks[x][y][z].update(tpf);
+						decorative_chunks[x][y][z].update(tpf);
 					}
 				}
 			}
@@ -73,7 +78,9 @@ public class VoxelTerrain extends Entity {
 										((int)Math.ceil(((double)size.y) / ((double)chunkSize.y))),
 										((int)Math.ceil(((double)size.z) / ((double)chunkSize.z))));
 			
-			chunks = new Chunk[chunkArraySize.x][chunkArraySize.y][chunkArraySize.z];
+			base_chunks = new Chunk[chunkArraySize.x][chunkArraySize.y][chunkArraySize.z];
+			decorative_chunks = new Chunk[chunkArraySize.x][chunkArraySize.y][chunkArraySize.z];
+			
 			
 			
 			// Create the chunks
@@ -92,14 +99,33 @@ public class VoxelTerrain extends Entity {
 						if(z * chunkSize.z + chunkSize.z > size.z)
 							adaptedChunkSize.z = size.z - z * chunkSize.z;
 						
+						Vector3Int pos = new Vector3Int(x * chunkSize.x, y * chunkSize.y, z * chunkSize.z);
+						
 						// Create the chunk
-						chunks[x][y][z] = new Chunk(this, new Vector3Int(x * chunkSize.x, y * chunkSize.y, z * chunkSize.z),
+						base_chunks[x][y][z] = new Chunk(this, pos.clone(),
 													adaptedChunkSize, cubes, size, cubeSize);
 						
-						chunks[x][y][z].setDrawTextures(false);
-						chunks[x][y][z].needToRebuild = true;
+						base_chunks[x][y][z].setDrawTextures(false);
+						base_chunks[x][y][z].needToRebuild = true;
 						
-						getNode().attachChild(chunks[x][y][z].getSpatial()  );
+						base_chunks[x][y][z].getSpatial().setLocalTranslation(pos.toVector3f());
+						getNode().attachChild(base_chunks[x][y][z].getSpatial()  );
+						
+						// Create the decorative chunk
+						decorative_chunks[x][y][z] = new Chunk(this, pos.clone(),
+													adaptedChunkSize, cubes, size, cubeSize.mult(1.05f));
+						
+						decorative_chunks[x][y][z].setDrawTextures(true);
+						decorative_chunks[x][y][z].setGreedy(true);
+						decorative_chunks[x][y][z].setNoiseBased(true);
+						decorative_chunks[x][y][z].generateNoise();
+						decorative_chunks[x][y][z].needToRebuild = true;
+						
+						decorative_chunks[x][y][z].getSpatial().setLocalTranslation(pos.toVector3f());
+						getNode().attachChild(decorative_chunks[x][y][z].getSpatial()  );
+						
+						
+						 
 					}
 				}
 			}
@@ -144,7 +170,7 @@ public class VoxelTerrain extends Entity {
 					
 				// Calculate which chunk this belongs to
 				Vector3Int chunkArrayCoords = new Vector3Int(x / chunkSize.x, y / chunkSize.y, z / chunkSize.z);
-				Chunk edited_chunk = chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z];
+				Chunk edited_chunk = base_chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z];
 				
 				// Rebuild render data for the chunk
 				if(previous_type==0 && type!=0)
@@ -167,21 +193,21 @@ public class VoxelTerrain extends Entity {
 				
 				// Check if any nearby chunk must be rebuilt
 				if(inChunkPosition.x == 0 && chunkArrayCoords.x > 0) {
-					chunks[chunkArrayCoords.x - 1][chunkArrayCoords.y][chunkArrayCoords.z].needToRebuild = true;
+					base_chunks[chunkArrayCoords.x - 1][chunkArrayCoords.y][chunkArrayCoords.z].needToRebuild = true;
 				} else if(inChunkPosition.x == chunkSize.x - 1 && chunkArrayCoords.x < chunkArraySize.x - 1) {
-					chunks[chunkArrayCoords.x + 1][chunkArrayCoords.y][chunkArrayCoords.z].needToRebuild = true;
+					base_chunks[chunkArrayCoords.x + 1][chunkArrayCoords.y][chunkArrayCoords.z].needToRebuild = true;
 				}
 				
 				if(inChunkPosition.y == 0 && chunkArrayCoords.y > 0) {
-					chunks[chunkArrayCoords.x][chunkArrayCoords.y - 1][chunkArrayCoords.z].needToRebuild = true;
+					base_chunks[chunkArrayCoords.x][chunkArrayCoords.y - 1][chunkArrayCoords.z].needToRebuild = true;
 				} else if(inChunkPosition.y == chunkSize.y - 1 && chunkArrayCoords.y < chunkArraySize.y - 1) {
-					chunks[chunkArrayCoords.x][chunkArrayCoords.y + 1][chunkArrayCoords.z].needToRebuild = true;
+					base_chunks[chunkArrayCoords.x][chunkArrayCoords.y + 1][chunkArrayCoords.z].needToRebuild = true;
 				}
 				
 				if(inChunkPosition.z == 0 && chunkArrayCoords.z > 0) {
-					chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z - 1].needToRebuild = true;
+					base_chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z - 1].needToRebuild = true;
 				} else if(inChunkPosition.z == chunkSize.z - 1 && chunkArrayCoords.z < chunkArraySize.z - 1) {
-					chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z + 1].needToRebuild = true;
+					base_chunks[chunkArrayCoords.x][chunkArrayCoords.y][chunkArrayCoords.z + 1].needToRebuild = true;
 				}
 				
 				}
@@ -203,6 +229,19 @@ public class VoxelTerrain extends Entity {
 		public AssetLibrary getAssetLibrary()
 		{
 			return world.getAssetLibrary();
+		}
+
+
+		public ColorPalette getColorPalette() {
+			 
+			
+			return colorPalette;
+		}
+
+
+		public void setColorPalette(int[] voxcolors) {
+			colorPalette = new ColorPalette(voxcolors);
+			
 		}
 
 
