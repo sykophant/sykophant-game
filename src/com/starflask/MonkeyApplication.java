@@ -148,8 +148,7 @@ public abstract class MonkeyApplication extends LegacyApplication {
         // Make the main window resizable
         Display.setResizable(true); 
          
-          
-      
+        
         //re-setting settings they can have been merged from the registry.
         setSettings(settings);
         super.start();
@@ -210,10 +209,11 @@ public abstract class MonkeyApplication extends LegacyApplication {
     public void initialize() {
         super.initialize();
         
+
         
         
         adaptiveDisplay = new AdaptiveDisplay();
-        System.out.println("hi");
+         
         
         // Several things rely on having this
         guiFont = loadGuiFont();
@@ -276,8 +276,8 @@ public abstract class MonkeyApplication extends LegacyApplication {
             reshape(newWidth, newHeight);
             System.out.println("Display resized");
         }
+       
         
-
         // update states
         if (prof!=null) prof.appStep(AppStep.StateManagerUpdate);
         stateManager.update(tpf);

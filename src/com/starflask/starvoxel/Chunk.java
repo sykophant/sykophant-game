@@ -149,7 +149,7 @@ public class Chunk extends Entity{
 													pos2.x, pos2.y, pos1.z,//TOP LEFT
 													pos2.x, pos2.y, pos2.z });//TOP RIGHT
 						
-						
+						System.out.println("rendering top ");
 						
 						//Indices
 						 
@@ -181,8 +181,12 @@ public class Chunk extends Entity{
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
+					verticesSize = vertexArrays.size()*4;
+					
 					// Bottom
 					if((position.y + y == 0) || (cubes[position.x + x][position.y + y - 1][position.z + z] == 0)) {
+						System.out.println("rendering bottom ");
+						
 						// Vertex data
 						vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z,// BOTTOM LEFT
 													pos2.x, pos1.y, pos1.z,// BOTTOM RIGHT
@@ -224,9 +228,13 @@ public class Chunk extends Entity{
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
+					verticesSize = vertexArrays.size()*4;
+					
 					// Front
-					 
+					
 					if((position.z + z == worldSize.z - 1) || (cubes[position.x + x][position.y + y][position.z + z + 1] == 0)) {
+						System.out.println("rendering front ");
+						
 						// Vertex data
 						vertexArrays.add(new float[] { pos1.x, pos1.y, pos2.z, // BOTTOM LEFT
 													pos2.x, pos1.y, pos2.z,// BOTTOM RIGHT
@@ -265,9 +273,12 @@ public class Chunk extends Entity{
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
+					verticesSize = vertexArrays.size()*4;
 					
 					// Back
 					if((position.z + z == 0) || (cubes[position.x + x][position.y + y][position.z + z - 1] == 0)) {
+						System.out.println("rendering back ");
+						
 						// Vertex data
 						vertexArrays.add(new float[] {  pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
 													pos1.x, pos2.y, pos1.z,// BOTTOM RIGHT
@@ -304,12 +315,14 @@ public class Chunk extends Entity{
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					
+					verticesSize = vertexArrays.size()*4;
+					
 					// Right
 					if((position.x + x == worldSize.x - 1) || (cubes[position.x + x + 1][position.y + y][position.z + z] == 0)) {
 						// Vertex data
 						vertexArrays.add(new float[] { pos2.x, pos1.y, pos1.z, // BOTTOM LEFT
-													pos2.x, pos1.y, pos2.z, // BOTTOM RIGHT
-													pos2.x, pos2.y, pos1.z, //TOP LEFT
+													pos2.x, pos2.y, pos1.z, // BOTTOM RIGHT
+													pos2.x, pos1.y, pos2.z, //TOP LEFT
 													pos2.x, pos2.y, pos2.z }); //TOP RIGHT
 						
 		 
@@ -344,13 +357,15 @@ public class Chunk extends Entity{
 														textureCoordinates.right, textureCoordinates.bottom});
 					}
 					 
+					 verticesSize = vertexArrays.size()*4;
+					  
 					// Left
 					if((position.x + x == 0) || (cubes[position.x + x - 1][position.y + y][position.z + z] == 0)) {
 						// Vertex data
 						vertexArrays.add(new float[] {pos1.x, pos1.y, pos1.z, // BOTTOM LEFT
-												pos1.x, pos2.y, pos1.z, // BOTTOM RIGHT
-												pos1.x, pos1.y, pos1.z, //TOP LEFT
-												pos1.x, pos2.y, pos2.z }); //TOP RIGHT
+													pos1.x, pos1.y, pos2.z, // BOTTOM RIGHT
+													pos1.x, pos2.y, pos1.z, //TOP LEFT
+													pos1.x, pos2.y, pos2.z }); //TOP RIGHT
 						
 						//Indices
 					 
@@ -380,7 +395,7 @@ public class Chunk extends Entity{
 														textureCoordinates.left, textureCoordinates.top,
 														textureCoordinates.left, textureCoordinates.bottom,
 														textureCoordinates.right, textureCoordinates.bottom});
-					} 
+					}  
 				}
 			}
 			
@@ -570,10 +585,15 @@ public class Chunk extends Entity{
 	
 	private void attachNewGeometry() {
 		
+		mesh.updateBound();
+		
 		Geometry geo = new Geometry("Chunk", mesh); // using our custom mesh object
 		Material mat = getAssetLibrary().findMaterial("terrain_material");
 		geo.setMaterial(mat);
 		getNode().attachChild(geo) ;
+		
+		
+		
 		 
 	}
 	
@@ -635,13 +655,13 @@ public class Chunk extends Entity{
 		
 		float dist = getCoordinates().distance( terrain.getCameraPosition().getPos() );
 		
-		if(dist < 50)
+		if(dist < 500)
 		{
 			return ChunkLOD.HIGH;  
 		}
-		if(dist < 100)
+		if(dist < 1000)
 		{
-			return ChunkLOD.LOW;  
+			return ChunkLOD.HIGH;  
 		}
 		
 		return ChunkLOD.HIGH;   ///temp
