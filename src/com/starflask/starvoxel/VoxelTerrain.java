@@ -9,17 +9,19 @@ import com.starflask.renderable.PositioningComponent;
 import com.starflask.util.Vector3Int;
 
 public class VoxelTerrain extends Entity {
-
+	
+	//read https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/
+	
 	// Sizes
 		private Vector3Int size = new Vector3Int(256,256,256);
 		private Vector3f cubeSize = new Vector3f(0.33f,0.33f,0.33f);
 		
-		// Array containing cube data
+		// Array containing cube data..make this a byte[][][]
 		private int[][][] cubes;
 		
 		// Chunks (used to render the cubes)
 		private Chunk[][][] base_chunks;
-		private Chunk[][][] decorative_chunks;
+		//private Chunk[][][] decorative_chunks;
 		private Vector3Int chunkArraySize;
 		private Vector3Int chunkSize = new Vector3Int(16,16,16);
 		
@@ -64,7 +66,7 @@ public class VoxelTerrain extends Entity {
 				for(int y = 0; y < chunkArraySize.y; y++) {
 					for(int z = 0; z < chunkArraySize.z; z++) {
 						base_chunks[x][y][z].update(tpf);
-						decorative_chunks[x][y][z].update(tpf);
+						//decorative_chunks[x][y][z].update(tpf);
 					}
 				}
 			}
@@ -79,7 +81,7 @@ public class VoxelTerrain extends Entity {
 										((int)Math.ceil(((double)size.z) / ((double)chunkSize.z))));
 			
 			base_chunks = new Chunk[chunkArraySize.x][chunkArraySize.y][chunkArraySize.z];
-			decorative_chunks = new Chunk[chunkArraySize.x][chunkArraySize.y][chunkArraySize.z];
+			//decorative_chunks = new Chunk[chunkArraySize.x][chunkArraySize.y][chunkArraySize.z];
 			
 			
 			
@@ -112,7 +114,7 @@ public class VoxelTerrain extends Entity {
 						getNode().attachChild(base_chunks[x][y][z].getSpatial()  );
 						
 						// Create the decorative chunk
-						decorative_chunks[x][y][z] = new Chunk(this, pos.clone(),
+						/*decorative_chunks[x][y][z] = new Chunk(this, pos.clone(),
 													adaptedChunkSize, cubes, size, cubeSize.mult(1.05f));
 						
 						decorative_chunks[x][y][z].setDrawTextures(true);
@@ -124,7 +126,7 @@ public class VoxelTerrain extends Entity {
 						decorative_chunks[x][y][z].getSpatial().setLocalTranslation(pos.toVector3f());
 						getNode().attachChild(decorative_chunks[x][y][z].getSpatial()  );
 						
-						
+						*/
 						 
 					}
 				}

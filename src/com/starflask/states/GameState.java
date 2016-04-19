@@ -3,6 +3,8 @@ package com.starflask.states;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.starflask.gameinterface.LocalChatManager;
+import com.starflask.gameinterface.LocalGameActionManager;
 import com.starflask.peripherals.InputActionComponent;
 import com.starflask.peripherals.InputActionExecutor;
 import com.starflask.peripherals.InputActionType;
@@ -14,21 +16,23 @@ import com.starflask.terminal.TerminalMenu;
 import com.starflask.terminal.TerminalRenderer;
 import com.starflask.util.EntityAppState;
 
-public class GameState extends EntityAppState implements InputActionExecutor{
+public class GameState extends EntityAppState  {
 	
 	
 	
 
 	 
 	VoxelWorld world;
+	LocalGameActionManager gameActionManager  ;
+	LocalChatManager chatManager;
 	
 	
 	 @Override
 	    public void initialize(AppStateManager stateManager, Application app) {
 	      super.initialize(stateManager, app); 
 	       
-	      this.addComponent(new NodeComponent() );
-	      this.addComponent(new InputActionComponent( this ));
+	      this.add(new NodeComponent() ); 
+	      
 	      this.getComponent(InputActionComponent.class).getRawStringInput().setActive(true);
 	      
 	      world = new VoxelWorld( app );
@@ -38,6 +42,9 @@ public class GameState extends EntityAppState implements InputActionExecutor{
 		   
 	      
 	      setEnabled(true);
+	      
+	      gameActionManager = new LocalGameActionManager();
+	      chatManager = new LocalChatManager();
 	   }
 	 
 	 
@@ -87,20 +94,23 @@ public class GameState extends EntityAppState implements InputActionExecutor{
 		
 	}
 
-
-	@Override
-	public void executeInputAction(InputActionType inputAction, boolean pressed) {
-		// Register actions here..
-		
-		
-		
-	} 
+	 
 
 
 	public void toggle() {
 		 setEnabled(!this.isEnabled());
 		  
 		
+	}
+
+
+	public InputActionComponent getFocusedInputActionComponent() {
+		 if(chatManager.chatIsActive())
+		 {
+			 chatManager.getComponent(InputActionComponent.class);
+		 }
+		 
+		return gameActionManager.getComponent(InputActionComponent.class); //controls character movement 
 	}
 	
 	

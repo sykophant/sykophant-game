@@ -6,6 +6,8 @@ import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.BloomFilter;
 import com.starflask.MonkeyApplication;
 import com.starflask.assets.AssetLibrary;
 import com.starflask.renderable.NodeComponent;
@@ -57,6 +59,19 @@ public class VoxelWorld extends Entity implements VoxImporterListener{
 	    moon.setDirection(new Vector3f(-1,0,2).normalizeLocal());
 	    moon.setColor(ColorRGBA.Blue);
 	    this.getComponent(NodeComponent.class).addLight(moon);
+	    
+	    
+	    
+	    
+	    FilterPostProcessor fpp=new FilterPostProcessor(app.getAssetManager());
+        BloomFilter bf=new BloomFilter(BloomFilter.GlowMode.Objects);
+        fpp.addFilter(bf);
+        app.getViewPort().addProcessor(fpp);
+        
+        //make a fire-spark particle emitter on ''fire'' blocks and make those particles glow with 'glowcolor'
+        
+        
+        //bake shadows into voxels like sands of osiris - then make objects cast dynamic shadows !
 		
 	}
 

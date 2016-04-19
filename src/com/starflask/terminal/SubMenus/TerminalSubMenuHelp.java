@@ -16,7 +16,8 @@ public class TerminalSubMenuHelp extends TerminalSubMenu {
 		menuOptions.add(new TerminalMenuOption("Host - Host a new match"));
 		menuOptions.add(new TerminalMenuOption("Join - Join a multiplayer match using a remote or local IP address"));
 		menuOptions.add(new TerminalMenuOption("List - Display a list of public matches to join"));
-		menuOptions.add(new TerminalMenuOption("Get - Find and download custom maps and gametypes"));
+		menuOptions.add(new TerminalMenuOption("Library - Display a list of your blackprints"));
+		menuOptions.add(new TerminalMenuOption("Get - Find and download custom maps and blackprints"));
 		menuOptions.add(new TerminalMenuOption("Edit - Enter the map editor"));
 		
 	//	menuOptions.add(new TerminalMenuOption("bots - Add AI bots to a match you are hosting"));
@@ -25,7 +26,7 @@ public class TerminalSubMenuHelp extends TerminalSubMenu {
 	@Override
 	public String respondToCommand(String cmd) {
 	 
-		if(cmd.startsWith("help"))
+		if(cmd.toLowerCase().startsWith("help"))
 		{
 			return render();
 		}

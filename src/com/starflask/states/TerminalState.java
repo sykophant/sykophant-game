@@ -25,8 +25,8 @@ public class TerminalState extends EntityAppState implements InputActionExecutor
 	    public void initialize(AppStateManager stateManager, Application app) {
 	      super.initialize(stateManager, app); 
 	       
-	      this.addComponent(new GuiNodeComponent() );
-	      this.addComponent(new InputActionComponent( this ));
+	      this.add(new GuiNodeComponent() );
+	      this.add(new InputActionComponent( this ));
 	      this.getComponent(InputActionComponent.class).getRawStringInput().setActive(true);
 	      
 	      consoleInterface = new TerminalConsoleInterface( this );

@@ -1,4 +1,4 @@
-package com.starflask.gameinterface;
+package com.starflask.display;
 
 public class WindowBuilder {
 	

@@ -78,6 +78,7 @@ public class Chunk extends Entity{
 		
 		this.terrain=terrain;
 		
+		this.add(new ChunkPhysicsComponent());
 		this.add(new NodeComponent());
 		}
 	

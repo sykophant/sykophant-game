@@ -125,5 +125,6 @@
 	<classpathentry kind="lib" path="lib/jme/simple-0.27.jar"/>
 	<classpathentry kind="lib" path="lib/ashley-1.7.2.jar"/>
 	<classpathentry kind="lib" path="lib/gdx-1.9.2.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.6.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

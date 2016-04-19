@@ -29,7 +29,7 @@ public class EntityAppState extends AbstractAppState{
 	   }
 	 
 	 
-	 protected void addComponent(Component c) {
+	 protected void add(Component c) {
 		 ashleyEntity.add(c); 
 	}
 	 

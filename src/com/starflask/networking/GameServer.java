@@ -3,6 +3,7 @@ package com.starflask.networking;
 import com.starflask.util.DebugCategory;
 import com.starflask.util.DebugLogger;
 
+//read https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
 public class GameServer implements Runnable  {
 	
 	Thread runner;

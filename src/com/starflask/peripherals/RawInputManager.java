@@ -15,6 +15,7 @@ import com.jme3.input.event.MouseMotionEvent;
 import com.jme3.input.event.TouchEvent;
 import com.starflask.MonkeyApplication;
 import com.starflask.peripherals.GlobalInputEvent.PeripheralType;
+import com.starflask.states.GameState;
 import com.starflask.states.TerminalState;
 
 public class RawInputManager extends AbstractAppState implements RawInputListener{
@@ -190,8 +191,17 @@ public class RawInputManager extends AbstractAppState implements RawInputListene
 	 */
 	public InputActionComponent focusedInputElement() 
 	{
-		return app.getStateManager().getState(TerminalState.class).getComponent(InputActionComponent.class);
+		if( app.getStateManager().getState(TerminalState.class).isEnabled())
+		{
+			return app.getStateManager().getState(TerminalState.class).getComponent(InputActionComponent.class);
+		}
+		if( app.getStateManager().getState(GameState.class).isEnabled())
+		{
+			return app.getStateManager().getState(GameState.class).getFocusedInputActionComponent() ;
+		}
 		
+		
+		return null;
 		
 	}
 	 

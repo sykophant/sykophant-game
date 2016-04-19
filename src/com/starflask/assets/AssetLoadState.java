@@ -17,7 +17,7 @@ public class AssetLoadState extends EntityAppState   {
     public void initialize(AppStateManager stateManager, Application app) {
       super.initialize(stateManager, app); 
       
-       this.addComponent(new AssetLibrary());
+       this.add(new AssetLibrary());
       
       
       load();

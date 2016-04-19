@@ -5,8 +5,20 @@ Need to make the model from magicavoxel import into chunks for the TerrainWorld 
 
 
 ## Timeline
+Make the console animate when it opens and closes
+Make the console show an animated progress bar as the game is loading (gamestate node does not attach until rdy)
+
+Get the voxels to render perfectly (not overlapping, not 90 degrees)
+
+//see https://hub.jmonkeyengine.org/t/yave-yet-another-voxel-engine-dev-blog/30203
+
 Add physics
 Add player movement (very similar to quake- sprint and leap around)
+
+Add acid and lava voxels that glow
+Add torch(fire) voxels that glow 
+
+Get the voxels to render small and ultra efficiently 
 
 
 
