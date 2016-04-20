@@ -9,22 +9,35 @@ import com.starflask.peripherals.InputActionComponent;
 import com.starflask.peripherals.InputActionExecutor;
 import com.starflask.peripherals.InputActionType;
 import com.starflask.gameinterface._;
+import com.starflask.gameinterface.GameActionPublisher._;
+
+import com.starflask.util._;
+import com.starflask.util.PublishSubscribeModel._;
+
+
 
 import com.starflask.world.GameEngine._;
 import scala.collection.mutable.IndexedSeq;
+ 
 
-class LocalGameActionManager extends Entity   with InputActionExecutor{
+class LocalGameActionManager extends Entity   with InputActionExecutor {
+  
+  
   
   //http://infoscience.epfl.ch/record/148043/files/DeprecatingObserversTR2010.pdf
   //need a better sub pub relationship !!
   
+  //http://jim-mcbeath.blogspot.com/2009/04/scala-listener-manager.html
   
-  var listeners: List[GameActionListenComponent => ()] = Nil
+  
+ // var listeners: List[GameActionListenComponent => ()] = Nil
 
- 
+    
   
   
-  var listeners =  IndexedSeq[GameActionListenComponent];
+ private val actionPublisher = new GameActionPublisher
+  
+  //var listeners =  IndexedSeq[GameActionListenComponent];
 
 	def LocalInputActionManager()
 	{
@@ -38,9 +51,11 @@ class LocalGameActionManager extends Entity   with InputActionExecutor{
 	  var gameAction = 0 //whatever we come up with 
 	  
 	  
+	    actionPublisher.publish(
+            MoveAction
+          )
 	  
-	  
-  	  broadcastGameAction(listeners, gameAction);
+  	 // broadcastGameAction(listeners, gameAction);
   	   
 		
 	} 
@@ -53,10 +68,15 @@ class LocalGameActionManager extends Entity   with InputActionExecutor{
 	 }
 	
 	
-	def registerListener(listener: GameActionListenComponent)
+	def registerListener(updateFunction: => Unit)
 	{
-		listeners = listeners + ( listener );
- 
+		 
+	  
+	  //subscribe a function to the publish event (in scala we subscribe the function not the class) 
+ 	      actionPublisher.subscribe(  updateFunction    ) //this is looking for a function
+ 	      
+ 	      
+ 	      // Unit required: LocalGameActionManager.this.actionPublisher.S (which expands to) com.starflask.gameinterface.GameActionPublisher.CustomGameAction ⇒ Unit
 	}
 	
 	def broadcastGameAction(listeners: IndexedSeq[_],gameAction: GameAction)
