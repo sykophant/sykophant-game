@@ -1,4 +1,4 @@
-package Shaders;
+package com.starflask.assets.Shaders;
 import com.jme3.post.SceneProcessor;
 import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;

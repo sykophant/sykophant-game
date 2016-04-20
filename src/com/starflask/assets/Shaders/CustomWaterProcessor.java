@@ -29,7 +29,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package Shaders;
+package com.starflask.assets.Shaders;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.material.Material;

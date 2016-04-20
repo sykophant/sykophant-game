@@ -1,4 +1,4 @@
-package Textures.Effects;
+package com.starflask.assets.Textures.Effects;
 
 /**
  * 

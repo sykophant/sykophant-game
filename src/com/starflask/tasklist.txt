@@ -74,3 +74,9 @@ Networking needs to be in scala!!!
 Same with unit data
 http://docs.scala-lang.org/tutorials/scala-for-java-programmers.html
 https://github.com/vmarquez/PureBomberMan   add scalaz
+
+
+try jme3 networking...
+else use akka, netty4, kryo and freeze
+
+
