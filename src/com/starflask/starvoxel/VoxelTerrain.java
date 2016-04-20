@@ -7,8 +7,9 @@ import com.starflask.assets.AssetLibrary;
 import com.starflask.renderable.NodeComponent;
 import com.starflask.renderable.PositioningComponent;
 import com.starflask.util.Vector3Int;
+import com.starflask.voxelmagica.VoxelMagicaImporter.VoxImporterListener;
 
-public class VoxelTerrain extends Entity {
+public class VoxelTerrain extends Entity implements VoxImporterListener{
 	
 	//read https://0fps.net/2012/06/30/meshing-in-a-minecraft-game/
 	
@@ -25,15 +26,14 @@ public class VoxelTerrain extends Entity {
 		private Vector3Int chunkArraySize;
 		private Vector3Int chunkSize = new Vector3Int(16,16,16);
 		
-		VoxelWorld world;
+		//VoxelWorld world;
 		
 		//ChunkMeshBuilder chunkMeshBuilder;
 		
 		ColorPalette colorPalette;
 		
-		public VoxelTerrain(VoxelWorld world)
-		{
-			this.world=world;
+		public VoxelTerrain( )
+		{ 
 			
 			this.add(new NodeComponent());
 			
@@ -48,24 +48,24 @@ public class VoxelTerrain extends Entity {
 		
 
 		boolean firstBuildPassComplete = false;
-		public void build() {
+		public void build(AssetLibrary assetLibrary) {
 			 
-			//chunkMeshBuilder = new ChunkMeshBuilder();
-			//chunkMeshBuilder.start();
+			this.assetLibrary=assetLibrary;
+		 
 			
 			firstBuildPassComplete = true;
 			
 		}
 		
 	 
-		public void update(float tpf)
+		public void update(float tpf, PositioningComponent cameraPositionComponent )
 		{
 			
 			//maybe only do this once every few frames?
 			for(int x = 0; x < chunkArraySize.x; x++) {
 				for(int y = 0; y < chunkArraySize.y; y++) {
 					for(int z = 0; z < chunkArraySize.z; z++) {
-						base_chunks[x][y][z].update(tpf);
+						base_chunks[x][y][z].update(tpf, cameraPositionComponent.getPos().clone() );
 						//decorative_chunks[x][y][z].update(tpf);
 					}
 				}
@@ -216,18 +216,13 @@ public class VoxelTerrain extends Entity {
 			}
 		}
 		
-	
-		protected PositioningComponent getCameraPosition()
-		{
-			return world.getCameraPosition();
-		}
 		
-		 
-
-
+	 
+		
+		  AssetLibrary assetLibrary;
 		public AssetLibrary getAssetLibrary()
 		{
-			return world.getAssetLibrary();
+			return assetLibrary;
 		}
 
 
@@ -237,16 +232,37 @@ public class VoxelTerrain extends Entity {
 			return colorPalette;
 		}
 
-
-		public void setColorPalette(int[] voxcolors) {
-			colorPalette = new ColorPalette(voxcolors);
-			
-		}
+ 
 
 
 		public boolean terrainIsCollidable(int x, int y, int z)
 		{
 			return cubes[x][y][z] != 0;
 		}
+		
+
+		@Override
+		public void blockConstructed(  int x, int y, int z, int colorIndex) {
+			 	byte blockTypeId = (byte)( colorIndex + 1); //so 0 is air
+				setCubeType(x,y,z,blockTypeId);	
+						 
+				 
+		}
+ 
+		
+		
+		@Override
+		public void setColorPalette(int[] voxcolors) {
+			colorPalette = new ColorPalette(voxcolors);
+			
+		}
+
+
+		@Override
+		public void setStructSize(int sizex, int sizey, int sizez) {
+			// TODO Auto-generated method stub
+			
+		} 
+		
 
 }

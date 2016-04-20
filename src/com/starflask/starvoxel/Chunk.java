@@ -97,10 +97,9 @@ public class Chunk extends Entity{
 	 
 	Future<Chunk> futureBuiltChunk = null;
 	
-	public void update(float tpf)
+	public void update(float tpf, Vector3f cameraPosition)
 	{
-		
-		
+		 
 		
 		if(needToRebuild && numSolidBlocks>0)
 		{
@@ -108,7 +107,7 @@ public class Chunk extends Entity{
 			
 			//terrain.getChunkMeshBuilder().queueBuild(this);
 			
-			RenderDataBuilder buildTask = new RenderDataBuilder(this);
+			RenderDataBuilder buildTask = new RenderDataBuilder(this, cameraPosition);
 			 futureBuiltChunk = getExecutor().submit(     buildTask   );
 			  
 			  
@@ -288,9 +287,9 @@ public class Chunk extends Entity{
 	}
 
 
-	public int getChunkLOD() { 
+	public int getChunkLOD(Vector3f cameraPosition) { 
 		
-		float dist = getCoordinates().distance( terrain.getCameraPosition().getPos() );
+		float dist = getCoordinates().distance(  cameraPosition  );
 		
 		if(dist < 500)
 		{

@@ -85,7 +85,7 @@ import com.jme3.ui.Picture;
  *      //attaching the water to the root node
  *      rootNode.attachChild(water);
  * </code>
- * @author Normen Hansen & Rémy Bouquet
+ * @author Normen Hansen &  my Bouquet
  */
 public class CustomWaterProcessor implements SceneProcessor {
 

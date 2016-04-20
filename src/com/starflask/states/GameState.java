@@ -3,14 +3,15 @@ package com.starflask.states;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.starflask.MonkeyApplication;
+import com.starflask.assets.AssetLibrary;
 import com.starflask.gameinterface.LocalChatManager;
 import com.starflask.gameinterface.LocalGameActionManager;
 import com.starflask.peripherals.InputActionComponent;
 import com.starflask.peripherals.InputActionExecutor;
 import com.starflask.peripherals.InputActionType;
 import com.starflask.renderable.GuiNodeComponent;
-import com.starflask.renderable.NodeComponent;
-import com.starflask.starvoxel.VoxelWorld;
+import com.starflask.renderable.NodeComponent; 
 import com.starflask.terminal.TerminalConsoleInterface;
 import com.starflask.terminal.TerminalMenu;
 import com.starflask.terminal.TerminalRenderer;
@@ -21,9 +22,7 @@ public class GameState extends EntityAppState  {
 	
 	
 	
-
-	 
-	 VoxelWorld world;
+ 
 	World hardWorld;
 	LocalGameActionManager gameActionManager  ;
 	LocalChatManager chatManager;
@@ -35,13 +34,15 @@ public class GameState extends EntityAppState  {
 	       
 	      this.add(new NodeComponent() ); 
 	      
-	      hardWorld = new World();
-	      hardWorld.build(    this.getComponent(NodeComponent.class)  );
+	      AssetLibrary lib = ((MonkeyApplication) app).getAssetLibrary();
 	      
-	      world = new VoxelWorld( app );
-	      world.build();
+	      hardWorld = new World(   );
+	      hardWorld.build( this.getComponent(NodeComponent.class), lib  );
 	      
-		   this.getComponent(NodeComponent.class).attachChild( world.getComponent(NodeComponent.class)  );
+	     // world = new VoxelWorld( app );
+	      //world.build();
+	      
+		   this.getComponent(NodeComponent.class).attachChild( hardWorld.getComponent(NodeComponent.class)  );
 		   
 	      
 	      setEnabled(true);
@@ -87,7 +88,7 @@ public class GameState extends EntityAppState  {
 	{
 		super.update(tpf);
 		
-		world.update(tpf);
+		hardWorld.update(tpf);
 		
 	}
 

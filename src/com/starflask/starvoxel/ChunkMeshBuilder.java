@@ -18,7 +18,7 @@ import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.util.BufferUtils;
 import com.starflask.util.Vector3Int;
  
-public class ChunkMeshBuilder extends Thread{
+public class ChunkMeshBuilder  {
 
 	public final static Vector3f normalUp = new Vector3f(0, 1, 0);
 	public final static Vector3f normalDown = new Vector3f(0, -1, 0);
@@ -27,69 +27,8 @@ public class ChunkMeshBuilder extends Thread{
 	public final static Vector3f normalFront = new Vector3f(0, 0, 1);
 	public final static Vector3f normalBack = new Vector3f(0, 0, -1);
 	
-	
-	@Override
-	public void run()
-	{
-		
-		initialize();
-		
-		while(true)
-		{
-			update();
-		} 
-		
-	}
-
-	private void initialize() {
-		
-		
-	}
-
-	private void update() {
-		
-		fulfillBuildRequests() ;
-		 
-		
-		
-	}
-
-	
-	
-	
-	/*
-	 * Should do some sorting so meshes are built closest to the player first..
-	 * 
-	 * Also I believe that this is so highly synchronized that it makes the main thread lag a lot while waiting..
-	 */
-	private void fulfillBuildRequests() {
-		
-		ChunkBuildRequest nextRequest = null;
-		Iterator<ChunkBuildRequest> iter = null;
-			
-		synchronized( buildRequests ) {
-		
-			iter = buildRequests.iterator();
-		
-		
-			if(!buildRequests.isEmpty() && iter.hasNext())
-			{
-				nextRequest = iter.next().clone();		
-				iter.remove();
-			
-			}
-		}
-		
-		if(nextRequest!=null  && chunkStillNearView( nextRequest.chunk)   )
-		{
-		 	nextRequest.buildMesh();
-	
-		 
-		}
-
-		
-	}
-
+	  
+	 
 	
 	/*
 	 * Dont draw chunks that are not near the current view
@@ -97,85 +36,29 @@ public class ChunkMeshBuilder extends Thread{
 	 * 
 	 */
 	
-	 private boolean chunkStillNearView(Chunk chunk) {
+	 private static boolean chunkStillNearView(Chunk chunk,Vector3f cameraPosition) {
 		 
-		return chunk.getChunkLOD() != ChunkLOD.HIDDEN ;
+		return chunk.getChunkLOD( cameraPosition ) != ChunkLOD.HIDDEN ;
 	}
-
-	List<ChunkBuildRequest> buildRequests = Collections.synchronizedList(new ArrayList<ChunkBuildRequest>());
-//	List<ChunkBuildRequest> buildRequests= new ArrayList<ChunkBuildRequest>();
-	
-	public void queueBuild( Chunk chunk) {
-		
-		if( buildRequests.size() > 10000 )
-		{
-			System.err.println("Backlog of chunk generation is too large! Over 10000 chunks");
-			return;
-		}
-		
-		buildRequests.add(new ChunkBuildRequest( chunk ));
-		
-		
-		//System.out.println("added new build request to queue of size " + buildRequests.size());
-	}
-	
-	
-	class ChunkBuildRequest
-	{
-		
-		int levelOfDetail;
-		Chunk chunk;
-		 
-		
-		public ChunkBuildRequest(  Chunk chunk ) {
-			
-			this.chunk=chunk;
-			
-			this.levelOfDetail = chunk.getChunkLOD();
-			 
-		}
-
-
-		public void buildMesh() {
-			
-			try{
-				 
-				 buildRenderData(chunk); 
-			 		
-			}catch(Exception e)
-			{
-				e.printStackTrace();
-			}
-			
-			
-		}
-		
+  
 	 
-
-
-		
-
-		@Override
-		protected ChunkBuildRequest clone()
-		{
-			return new ChunkBuildRequest( chunk );
-		}
-		
-		
-		
-	}
 	
 	
 	 public static class RenderDataBuilder implements Callable<Chunk>  {
 		     private final Chunk chunk;
+		     private final Vector3f cameraPosition;
 
-		     public RenderDataBuilder(Chunk chunk) {
+		     public RenderDataBuilder(Chunk chunk,Vector3f cameraPosition) {
 		         this.chunk = chunk;
+		         this.cameraPosition = cameraPosition;
 		     }
 
 		     	public Chunk call() {
 		    	 
-		     	 buildRenderData(  chunk  );
+		     	if( chunkStillNearView(chunk,cameraPosition) )
+		     	{
+		     		buildRenderData(  chunk  );
+		     	}
 		    	 
 				return chunk;
 		         // use ipToPing

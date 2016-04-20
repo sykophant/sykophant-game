@@ -4,17 +4,52 @@ import com.jme3.math._;
 import com.jme3.light._;
 import com.jme3.scene.Node;
 
+
+import com.badlogic.ashley.core.Entity;
+
 import com.jme3.math.ColorRGBA;
 
-class World(){
+import com.starflask.world.GameEngine._ 
+import com.starflask.voxelmagica._
+import com.starflask.assets._
+
+import com.starflask.renderable._
+
+class World() extends Entity{
   
+  
+		 this.add(new NodeComponent());
+		 
+		 val node = this.getComponent(classOf[NodeComponent]);
+		 
+   //vals can be changed, vars can be changed. You can always change the inside tho
   
    //val entities = new mutable.HashMap[Int, Entity]()
+  //AtomicSTRef(GameBoard(Map[String, Player](), Map[Int, Boolean]()))
   
-  //attach lighting ??
+  //we init the gamedata which will be handed off repeatedly 
+ //val gamedata = AtomicSTRef( ReactiveGameData( 0 , Map[Int, HardUnit]() ))
+  
+  import com.starflask.starvoxel._
+  
+  val gamedata =  ReactiveGameData( 0 , Map[Int, HardUnit]() )
+  
+  
+  val terrain = new VoxelTerrain();
    
-   def build( node: Node )   =  new Node( )
+   def build( node: Node, assetLibrary: AssetLibrary )   =  new Node( )
    {
+     
+     
+     	var importer = new VoxelMagicaImporter( terrain  );
+		//println( System.getProperty("user.home") + "/workspace/UltraBlackBloodDeath/assets/monu9.vox" );
+		  importer.readVoxelMagicaModel(System.getProperty("user.home") + "/git/UltraBlackBloodDeath/assets/monu9.vox");
+		  
+		  terrain.build( assetLibrary )
+		  
+		  
+		  node.attachChild( terrain.getComponent( classOf[NodeComponent])  )
+     
      
 		 node.addLight( new AmbientLight(ColorRGBA.White) ); 
 		 
@@ -29,6 +64,35 @@ class World(){
 	    node.addLight(moon);
 		 
 		 println("added light usin scala");
+		 
    }
+  
+  
+ /* def getAction(action: GameAction) = action match
+  {
+    case 
+  }
+    //val in = getClass.getResourceAsStream("rootPage")
+    for {
+      name <- Option(action.getParameter("name"))
+      action <- Option(action.getParameter("action")) if (action == "join" || action == "move" || action == "shoot")
+      posStr <- Option(action.getParameter("position"))
+      position = Integer.parseInt(posStr)
+    } yield action match {
+      case "join" => Join(name, "")
+      case "move" => Move(name, position)
+      case "shoot" => ShotFired(name, position)
+    }
+    */
    
+    def update(tpf: Float )
+    {
+      var playerPosComponent = new PositioningComponent();
+      
+      terrain.update(tpf,playerPosComponent)
+      
+      //gamedata 
+      
+    }
+    
 }

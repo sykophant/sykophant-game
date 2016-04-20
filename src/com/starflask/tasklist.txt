@@ -80,3 +80,16 @@ try jme3 networking...
 else use akka, netty4, kryo and freeze
 
 
+
+Unit movement:
+The client is the master of his/her position (like wow)  and the server checks it as a warden
+
+other nice sample game
+http://bazaar.launchpad.net/~willem-duminy/+junk/boogaloo/view/head:/src/boogaloo/GameState.scala
+
+
+futures in scala 
+http://danielwestheide.com/blog/2013/01/09/the-neophytes-guide-to-scala-part-8-welcome-to-the-future.html
+
+
+DONT USE SCALAZ YET its super broken and weird
