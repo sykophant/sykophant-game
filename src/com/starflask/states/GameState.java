@@ -15,6 +15,7 @@ import com.starflask.terminal.TerminalConsoleInterface;
 import com.starflask.terminal.TerminalMenu;
 import com.starflask.terminal.TerminalRenderer;
 import com.starflask.util.EntityAppState;
+import com.starflask.world.World;
 
 public class GameState extends EntityAppState  {
 	
@@ -22,7 +23,8 @@ public class GameState extends EntityAppState  {
 	
 
 	 
-	VoxelWorld world;
+	 VoxelWorld world;
+	World hardWorld;
 	LocalGameActionManager gameActionManager  ;
 	LocalChatManager chatManager;
 	
@@ -33,7 +35,8 @@ public class GameState extends EntityAppState  {
 	       
 	      this.add(new NodeComponent() ); 
 	      
-	      
+	      hardWorld = new World();
+	      hardWorld.build(    this.getComponent(NodeComponent.class)  );
 	      
 	      world = new VoxelWorld( app );
 	      world.build();

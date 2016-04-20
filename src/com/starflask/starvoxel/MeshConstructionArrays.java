@@ -56,10 +56,7 @@ public class MeshConstructionArrays {
 				
 				System.out.println("vertices:"+numVertices);
 				for(float[] array : vertexArrays) {
-					for(float f : array)
-					{
-						System.out.println("vertex " + f);
-					}
+					 
 					buffers.vertexBuffer.put(array);
 				}
 				
@@ -76,10 +73,7 @@ public class MeshConstructionArrays {
 				System.out.println("indices:"+numIndices);
 				for(int[] array : indexArrays) {	
 					
-					for(int i : array)
-					{
-						System.out.println("index " + i);
-					}
+					 
 					
 					buffers.indexBuffer.put(array);
 				}

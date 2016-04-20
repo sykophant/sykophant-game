@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
@@ -152,34 +153,7 @@ public class ChunkMeshBuilder extends Thread{
 	 
 
 
-		private void buildRenderData(Chunk chunk  ) {
-			 MeshConstructionBuffers buffers = null;
-			
-			 if(chunk.isGreedy())
-			 {
-				 buffers =  buildGreedyRenderData(chunk );  //only good for nontextured since it connects adjacent faces
-			 }else
-			 {
-				 buffers =  buildStandardRenderData(chunk );
-			 }
-			 
-			 
-			 	if(buffers != null)
-			 	{
-				
-				Mesh mesh = generateNewMesh( buffers );
-				
-				 if(mesh!=null)
-				 {
-					 chunk.setMesh(mesh);
-					 chunk.threadedBuildFinished = true;
-				 }
-			 	}
-			 
-		}
-
-
-
+		
 
 		@Override
 		protected ChunkBuildRequest clone()
@@ -191,7 +165,55 @@ public class ChunkMeshBuilder extends Thread{
 		
 	}
 	
+	
+	 public static class RenderDataBuilder implements Callable<Chunk>  {
+		     private final Chunk chunk;
 
+		     public RenderDataBuilder(Chunk chunk) {
+		         this.chunk = chunk;
+		     }
+
+		     	public Chunk call() {
+		    	 
+		     	 buildRenderData(  chunk  );
+		    	 
+				return chunk;
+		         // use ipToPing
+		     }
+		}
+		 
+	
+	
+	public static void buildRenderData(Chunk chunk  ) {
+		 MeshConstructionBuffers buffers = null;
+		
+		 if(chunk.isGreedy())
+		 {
+			 buffers =  buildGreedyRenderData(chunk );  //only good for nontextured since it connects adjacent faces
+		 }else
+		 {
+			 buffers =  buildStandardRenderData(chunk );
+		 }
+		 
+		 
+		 	if(buffers != null)
+		 	{
+			
+			Mesh mesh = generateNewMesh( buffers );
+			
+			 if(mesh!=null)
+			 {
+				 mesh.updateBound();
+				 chunk.setMesh(mesh);
+				 //chunk.threadedBuildFinished = true;
+			 }
+		 	}
+		 
+	}
+
+
+
+	
 	public static  Mesh generateNewMesh(MeshConstructionBuffers buffers) {
 		return generateNewMesh(buffers.vertexBuffer, buffers.normalBuffer, buffers.colorBuffer, buffers.indexBuffer);
 	}
@@ -478,8 +500,7 @@ public class ChunkMeshBuilder extends Thread{
 
 		int blockId = voxel.type;
 		
-		System.out.println("quad for type " + blockId);
-		
+	 
 		Vector3f cubeSize = chunk.getCubeSize();
 
 		/*CubeType cubetype = gamedata.cubetypes[blockId];
@@ -489,12 +510,11 @@ public class ChunkMeshBuilder extends Thread{
 			return;
 		}*/
 
-		final Vector3f[] vertices = new Vector3f[4];
-
-		vertices[0] = bottomLeft.multLocal(3).mult(cubeSize);
-		vertices[1] = bottomRight.multLocal(3).mult(cubeSize);
-		vertices[2] = topLeft.multLocal(3).mult(cubeSize);
-		vertices[3] = topRight.multLocal(3).mult(cubeSize);
+		final Vector3f[] vertices = new Vector3f[4];  
+		vertices[0] = bottomLeft.mult(cubeSize);
+		vertices[1] = bottomRight.mult(cubeSize);
+		vertices[2] = topLeft.mult(cubeSize);
+		vertices[3] = topRight.mult(cubeSize);
 
 		for (Vector3f v : vertices) {
 			arrays.getVertices().add(new float[]{v.x,v.y,v.z});

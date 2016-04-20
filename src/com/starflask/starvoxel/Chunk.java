@@ -9,6 +9,12 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.lwjgl.opengl.GL11;
 
@@ -24,8 +30,10 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.VertexBuffer.Type;
 import com.jme3.util.BufferUtils;
+import com.starflask.MonkeyApplication;
 import com.starflask.assets.AssetLibrary;
 import com.starflask.renderable.NodeComponent;
+import com.starflask.starvoxel.ChunkMeshBuilder.RenderDataBuilder;
 import com.starflask.util.Vector3;
 import com.starflask.util.Vector3Int;
 import com.starflask.util.noise.PerlinNoiseGenerator;
@@ -40,7 +48,7 @@ public class Chunk extends Entity{
 	private Vector3Int size;
 	
 	// NOTE: this the same array as in the World class, so not all of these cubes belong to this chunk
-	private int[][][] cubes;
+	private byte[][][] cubes;
 	private Vector3Int worldSize;
 	private Vector3f cubeSize;
 	
@@ -62,14 +70,14 @@ public class Chunk extends Entity{
 	boolean drawTextures;
 	
 	  boolean needToRebuild = true;
-	boolean threadedBuildFinished = false;
+	//boolean threadedBuildFinished = false;
 	
 	VoxelTerrain terrain;
 	
 	protected int numSolidBlocks = 0;
 	 
 	
-	public Chunk(VoxelTerrain terrain, Vector3Int position, Vector3Int size, int[][][] cubes, Vector3Int worldSize, Vector3f cubeSize) {
+	public Chunk(VoxelTerrain terrain, Vector3Int position, Vector3Int size, byte[][][] cubes, Vector3Int worldSize, Vector3f cubeSize) {
 		this.position = position;
 		this.size = size;
 		this.cubes = cubes;
@@ -83,29 +91,68 @@ public class Chunk extends Entity{
 		}
 	
 	
+	
+	//The future that is used to check the execution status:
+	 
+	 
+	Future<Chunk> futureBuiltChunk = null;
+	
 	public void update(float tpf)
 	{
+		
+		
+		
 		if(needToRebuild && numSolidBlocks>0)
 		{
 			needToRebuild = false;
 			
-			terrain.getChunkMeshBuilder().queueBuild(this);
+			//terrain.getChunkMeshBuilder().queueBuild(this);
 			
+			RenderDataBuilder buildTask = new RenderDataBuilder(this);
+			 futureBuiltChunk = getExecutor().submit(     buildTask   );
+			  
+			  
 		}
 		
 	 
-		if(threadedBuildFinished )
-		{
-			threadedBuildFinished = false;
+		if(futureBuiltChunk!=null && futureBuiltChunk.isDone()  )
+		{  
+			
+			 
 			//attach the new mesh to my geometry
-			attachNewGeometry();
-			System.out.println("attached chunk geom " + this );
+			 
+			try {
+				
+				Chunk futureChunk = futureBuiltChunk.get();
+				 
+				attachNewGeometry( futureChunk.getMesh()   ); 
+				futureBuiltChunk = null;
+				
+			} catch (InterruptedException e) {
+			 
+				e.printStackTrace();
+			} catch (ExecutionException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			
+			
+			
 		}
 		
 		
 	}
 	
 	
+
+
+	private Mesh getMesh() {
+	 
+		return mesh;
+	}
+
+
 
 
 	public void setDrawTextures(boolean drawTextures) {
@@ -175,9 +222,9 @@ public class Chunk extends Entity{
 	
 	 
 	
-	private void attachNewGeometry() {
+	private void attachNewGeometry(Mesh newMesh) {
+		mesh = newMesh;
 		
-		mesh.updateBound();
 		
 		Geometry geo = new Geometry("Chunk", mesh); // using our custom mesh object
 		
@@ -286,11 +333,7 @@ public class Chunk extends Entity{
 		return size;
 	}
 
-
-	private int[][][] getCubes() {
-		 
-		return cubes;
-	}
+ 
 
 
 	public Vector3f getCubeSize() {
@@ -354,7 +397,7 @@ public class Chunk extends Entity{
 
 	private boolean withinWorldBounds(Vector3Int pos) {
 		 
-		return pos.x>0 && pos.x<worldSize.x && pos.y>0 && pos.y<worldSize.y && pos.z>0 && pos.z<worldSize.z;
+		return pos.x>=0 && pos.x<worldSize.x && pos.y>=0 && pos.y<worldSize.y && pos.z>=0 && pos.z<worldSize.z;
 	}
 
 	/*
@@ -388,5 +431,8 @@ public class Chunk extends Entity{
 		 return new Random(this.numSolidBlocks);
 	}
 	
-	
+	private static ExecutorService getExecutor()
+	{
+		return MonkeyApplication.getConcurrencyExecutor();
+	}
 }

@@ -32,6 +32,11 @@
  */
 package com.starflask;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 import org.lwjgl.opengl.Display;
 
 import com.badlogic.ashley.core.Engine;
@@ -94,6 +99,11 @@ public abstract class MonkeyApplication extends LegacyApplication {
     protected boolean showSettings = true;
     private AppActionListener actionListener = new AppActionListener();
     
+    //static ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(4);
+    
+    static ExecutorService executor = Executors.newScheduledThreadPool(4);
+    
+    
     static AdaptiveDisplay adaptiveDisplay ;
     
     
@@ -154,7 +164,11 @@ public abstract class MonkeyApplication extends LegacyApplication {
         super.start();
     }
     
-    
+    @Override
+    public void destroy() {
+        super.destroy();
+        executor.shutdown();
+    }
     
 
     /**
@@ -349,6 +363,11 @@ public abstract class MonkeyApplication extends LegacyApplication {
 	public static AdaptiveDisplay getAdaptiveDisplay() {
 		 
 		return adaptiveDisplay;
+	}
+
+	public static ExecutorService getConcurrencyExecutor() {
+		 
+		return executor;
 	}
 	
 } 

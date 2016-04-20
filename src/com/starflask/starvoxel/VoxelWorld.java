@@ -36,16 +36,17 @@ public class VoxelWorld extends Entity implements VoxImporterListener{
 		
 		VoxelMagicaImporter importer = new VoxelMagicaImporter(this );
 		//System.out.println( System.getProperty("user.home") + "/workspace/UltraBlackBloodDeath/assets/monu9.vox" );
-		 importer.readVoxelMagicaModel(System.getProperty("user.home") + "/workspace/UltraBlackBloodDeath/assets/monu9.vox");
+		  importer.readVoxelMagicaModel(System.getProperty("user.home") + "/workspace/UltraBlackBloodDeath/assets/monu1.vox");
 		
-		blockConstructed( 1,1,1,1);
-		blockConstructed( 1,2,1,1);
-		blockConstructed( 2,-5,1,1);
+		//blockConstructed( 1,1,1,1);
+		//blockConstructed( 1,0,1,1); 
+		  //left and right sides never render in greedy?
+		  
 		terrain.build();
 		
 		app.getTerminalState().log("Terrain built");
 		
-		AmbientLight scatteredlight;
+	/*	AmbientLight scatteredlight;
 		scatteredlight = new AmbientLight();
 		scatteredlight.setColor(ColorRGBA.White);
 		 this.getComponent(NodeComponent.class).addLight(scatteredlight);
@@ -59,7 +60,7 @@ public class VoxelWorld extends Entity implements VoxImporterListener{
 	    moon.setDirection(new Vector3f(-1,0,2).normalizeLocal());
 	    moon.setColor(ColorRGBA.Blue);
 	    this.getComponent(NodeComponent.class).addLight(moon);
-	    
+	    */
 	    
 	    
 	    
@@ -91,7 +92,7 @@ public class VoxelWorld extends Entity implements VoxImporterListener{
 	
 	@Override
 	public void blockConstructed(  int x, int y, int z, int colorIndex) {
-		 	int blockTypeId = colorIndex + 1; //so 0 is air
+		 	byte blockTypeId = (byte)( colorIndex + 1); //so 0 is air
 			terrain.setCubeType(x,y,z,blockTypeId);	
 					 
 			 

@@ -8,7 +8,7 @@ Need to make the model from magicavoxel import into chunks for the TerrainWorld 
 Make the console animate when it opens and closes
 Make the console show an animated progress bar as the game is loading (gamestate node does not attach until rdy)
 
-Get the voxels to render perfectly (not overlapping, not 90 degrees)
+Voxels render well now but take a while to load in w greedy (chunks)
 
 //see https://hub.jmonkeyengine.org/t/yave-yet-another-voxel-engine-dev-blog/30203
 
@@ -45,3 +45,32 @@ On linux, the camera is broken
 ## Backburner
 This game will be for sale but will also be open source
 
+
+## Functional Programming 
+
+"Run all your entities independently in a functionally pure way, pass in a static copy of the world (from last frame) and themselves, and they return a new version of themselves at the end"
+"You create events that get communicated to the target entities"
+In their simplest form: Entity => Entity
+
+https://michaelshaw.github.io/game_talk/game.html#/34
+
+Mutable:
+Voxel grids/volumes (my games are generally tile/voxel based)
+My entities (and their animation matrices)
+"Tesselators" wrappers for Float arrays used for temporarily storing generated geometry.
+The top two only can only be modified with through events ... so the majority of update code just seed a parent readonly type (this is how my update code remains "pure").
+Not pure ... but it doesn't really feel right in either category:
+Collision detection gives a pure output but uses mutation internally for temp state but it doesn't affect the entity.
+Basically collision detection and animation matrix re-use stopped 90% of my allocations.
+Pure:
+The game update code, AI/decision making (outside of pathing/floodfilling which act as services interacted with through routed events) is just pure functions that emit events.
+Intermediary representation (read: immutable tree of case classes) that gets shipped from the game logic thread to render thread. My render + sim side are in seperate projects that don't depend on each other, and part of rendering involves constructing an intermediary description that gets handed off to the render thread. This representation is immutable. It becomes garbage at the end of the frame ... this is my major abusive part of the new generation ... but I'm kind of attached to the benefits (my render layer stays pretty damn dumb, then there's the concurrency). If the garbage became too much I'd just object pool as I like the concept too much.
+Happy to go in to detail on whatever you want. Or post a complete render intermediary language for a game.
+
+http://scala-ide.org/download/current.html
+
+
+Networking needs to be in scala!!!
+Same with unit data
+http://docs.scala-lang.org/tutorials/scala-for-java-programmers.html
+https://github.com/vmarquez/PureBomberMan   add scalaz

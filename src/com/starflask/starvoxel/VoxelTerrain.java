@@ -14,10 +14,10 @@ public class VoxelTerrain extends Entity {
 	
 	// Sizes
 		private Vector3Int size = new Vector3Int(256,256,256);
-		private Vector3f cubeSize = new Vector3f(0.33f,0.33f,0.33f);
+		private Vector3f cubeSize = new Vector3f(1f,1f,1f);
 		
-		// Array containing cube data..make this a byte[][][]
-		private int[][][] cubes;
+		// Array containing cube data
+		private byte[][][] cubes;
 		
 		// Chunks (used to render the cubes)
 		private Chunk[][][] base_chunks;
@@ -27,7 +27,7 @@ public class VoxelTerrain extends Entity {
 		
 		VoxelWorld world;
 		
-		ChunkMeshBuilder chunkMeshBuilder;
+		//ChunkMeshBuilder chunkMeshBuilder;
 		
 		ColorPalette colorPalette;
 		
@@ -37,7 +37,7 @@ public class VoxelTerrain extends Entity {
 			
 			this.add(new NodeComponent());
 			
-			cubes = new int[size.x][size.y][size.z];
+			cubes = new byte[size.x][size.y][size.z];
 			
 			initChunks(); 
 			
@@ -50,8 +50,8 @@ public class VoxelTerrain extends Entity {
 		boolean firstBuildPassComplete = false;
 		public void build() {
 			 
-			chunkMeshBuilder = new ChunkMeshBuilder();
-			chunkMeshBuilder.start();
+			//chunkMeshBuilder = new ChunkMeshBuilder();
+			//chunkMeshBuilder.start();
 			
 			firstBuildPassComplete = true;
 			
@@ -110,7 +110,7 @@ public class VoxelTerrain extends Entity {
 						base_chunks[x][y][z].setDrawTextures(false);
 						base_chunks[x][y][z].needToRebuild = true;
 						
-						base_chunks[x][y][z].getSpatial().setLocalTranslation(pos.toVector3f());
+						base_chunks[x][y][z].getSpatial().setLocalTranslation(pos.toVector3f().mult( base_chunks[x][y][z].getCubeSize() ));
 						getNode().attachChild(base_chunks[x][y][z].getSpatial()  );
 						
 						// Create the decorative chunk
@@ -157,17 +157,17 @@ public class VoxelTerrain extends Entity {
 		}
 		
 		
-		public void setCubeType(int x, int y, int z, int type) {
+		public void setCubeType(int x, int y, int z, byte type) {
 			// Is this within world bounds?
 			if(x >= 0 && x < size.x &&
 				y >= 0 && y < size.y &&
 				z >= 0 && z < size.z) {
 				
 				 
-				int previous_type = cubes[x][y][z];
+				byte previous_type = cubes[x][y][z];
 				// Set the cube type
 				cubes[x][y][z] = type;
-				
+				 
 				
 					
 				// Calculate which chunk this belongs to
@@ -222,10 +222,7 @@ public class VoxelTerrain extends Entity {
 			return world.getCameraPosition();
 		}
 		
-		protected ChunkMeshBuilder getChunkMeshBuilder()
-		{
-			return chunkMeshBuilder;
-		}
+		 
 
 
 		public AssetLibrary getAssetLibrary()
@@ -247,6 +244,9 @@ public class VoxelTerrain extends Entity {
 		}
 
 
-	 
+		public boolean terrainIsCollidable(int x, int y, int z)
+		{
+			return cubes[x][y][z] != 0;
+		}
 
 }

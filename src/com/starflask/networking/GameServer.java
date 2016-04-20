@@ -2,16 +2,19 @@ package com.starflask.networking;
 
 import com.starflask.util.DebugCategory;
 import com.starflask.util.DebugLogger;
+import com.starflask.networking.*;
 
 //read https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
 public class GameServer implements Runnable  {
 	
 	Thread runner;
+	GameServerProcess serverProcess;
 	
 	public GameServer()
 	{
-		runner = new Thread(this, "game server thread");
-		runner.setPriority(Thread.MIN_PRIORITY);
+		serverProcess= new GameServerProcess();
+		
+		runner = new Thread(serverProcess, "game server thread"); 
 		runner.start();
 	}
 	
