@@ -1,4 +1,5 @@
-package com.starflask.states;
+package com.starflask.states
+
 
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
@@ -7,6 +8,7 @@ import com.starflask.MonkeyApplication;
 import com.starflask.assets.AssetLibrary;
 import com.starflask.gameinterface.LocalChatManager;
 import com.starflask.gameinterface.LocalGameActionManager;
+import com.starflask.networking.RemoteClientConnection;
 import com.starflask.peripherals.InputActionComponent;
 import com.starflask.peripherals.InputActionExecutor;
 import com.starflask.peripherals.InputActionType;
@@ -18,40 +20,42 @@ import com.starflask.terminal.TerminalRenderer;
 import com.starflask.util.EntityAppState;
 import com.starflask.world.World;
 
-public class GameState extends EntityAppState  {
-	
-	
-	
+class HardGameState extends EntityAppState {
+  
+  
+  
  
-	World hardWorld;
-	LocalGameActionManager gameActionManager  ;
-	LocalChatManager chatManager;
+	var world = new World();
+	var localActionManager  = new LocalGameActionManager();
+	var chatManager = new LocalChatManager();
 	
+	var remoteClientConnection = new RemoteClientConnection(); //our network connection with the server 
 	
-	 @Override
-	    public void initialize(AppStateManager stateManager, Application app) {
+	override def initialize( stateManager: AppStateManager,  app: Application) {
 	      super.initialize(stateManager, app); 
 	       
 	      this.add(new NodeComponent() ); 
 	      
-	      AssetLibrary lib = ((MonkeyApplication) app).getAssetLibrary();
+	      app match { case a: MonkeyApplication =>  world.build( this.getComponent(classOf[NodeComponent]), a.getAssetLibrary()   ); }
+	      //var lib = ((MonkeyApplication) app).getAssetLibrary();
 	      
-	      hardWorld = new World(   );
-	      hardWorld.build( this.getComponent(NodeComponent.class), lib  );
+	      
+	      
 	      
 	     // world = new VoxelWorld( app );
 	      //world.build();
 	      
-		   this.getComponent(NodeComponent.class).attachChild( hardWorld.getComponent(NodeComponent.class)  );
+		   this.getComponent(classOf[NodeComponent]).attachChild( world.getComponent(classOf[NodeComponent])  );
 		   
 	      
 	      setEnabled(true);
 	      
-	      gameActionManager = new LocalGameActionManager();
-	      chatManager = new LocalChatManager();
+	      localActionManager.setReactiveGameData(world.getReactiveGameData())
+	      localActionManager.registerListener( remoteClientConnection.actionListener )
+	      
 	   }
 	 
-	 
+	 /*
 	 @Override
 		public void stateAttached(AppStateManager stateManager) {
 		 
@@ -61,30 +65,28 @@ public class GameState extends EntityAppState  {
 		 @Override
 		public void stateDetached(AppStateManager stateManager) {
 				
-		}
+		}*/
 	 
 
 
-		 	@Override
-		    public void setEnabled(boolean enabled) {
+		override def setEnabled(enabled: Boolean) {
 		      // Pause and unpause
 		      super.setEnabled(enabled);
 		      if(enabled){
 		        // init stuff that is in use while this state is RUNNING
-		    	  getRootNode().attachChild( this.getComponent(NodeComponent.class) );
+		    	  getRootNode().attachChild( this.getComponent(classOf[NodeComponent]) );
 		         
 		      } else {
 		        // take away everything not needed while this state is PAUSED
-		    	   getRootNode().detachChild( this.getComponent(NodeComponent.class) );
+		    	   getRootNode().detachChild( this.getComponent(classOf[NodeComponent]) );
 		         
 		      }
 		    }
 		 	
 		 	
 		 	
-	 
-	@Override
-	public void update(float tpf)
+	  
+	override def update(tpf: Float)
 	{
 		super.update(tpf);
 		
@@ -92,31 +94,16 @@ public class GameState extends EntityAppState  {
 		
 	}
 
-
-	public void log(String string) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	 
+ 
 
 
-	public void toggle() {
-		 setEnabled(!this.isEnabled());
-		  
-		
-	}
-
-
-	public InputActionComponent getFocusedInputActionComponent() {
+	def  getFocusedInputActionComponent() = {
 		 if(chatManager.chatIsActive())
 		 {
-			 chatManager.getComponent(InputActionComponent.class);
+			   chatManager.getComponent(classOf[InputActionComponent]);
 		 }
 		 
-		return gameActionManager.getComponent(InputActionComponent.class); //controls character movement 
+		  localActionManager.getComponent(classOf[InputActionComponent]); //controls character movement 
 	}
-	
-	
-
+  
 }

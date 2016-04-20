@@ -14,6 +14,7 @@ import com.starflask.voxelmagica._
 import com.starflask.assets._
 
 import com.starflask.renderable._
+import com.starflask.starvoxel._
 
 class World() extends Entity{
   
@@ -30,9 +31,9 @@ class World() extends Entity{
   //we init the gamedata which will be handed off repeatedly 
  //val gamedata = AtomicSTRef( ReactiveGameData( 0 , Map[Int, HardUnit]() ))
   
-  import com.starflask.starvoxel._
   
-  val gamedata =  ReactiveGameData( 0 , Map[Int, HardUnit]() )
+  
+  var gamedata =  ReactiveGameData( 0 , Map[Int, HardUnit]() )//totally mutable 
   
   
   val terrain = new VoxelTerrain();
@@ -84,6 +85,9 @@ class World() extends Entity{
       case "shoot" => ShotFired(name, position)
     }
     */
+   
+   
+   
    
     def update(tpf: Float )
     {

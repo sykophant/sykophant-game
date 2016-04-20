@@ -30,7 +30,7 @@ object TestServer {
 class GameServerProcess extends Runnable{
   
   var lastTickTime = System.currentTimeMillis
-  final var NETWORK_TICK_RATE = 66  //15 millis
+  final val NETWORK_TICK_RATE = 66  //66 millis
   
    var networkTick = 0
   
@@ -86,6 +86,11 @@ class GameServerProcess extends Runnable{
     NetworkUtils.registerMessageTypes(myServer, listener);
     
   }
+  
+  /*
+   * we send out players health, status, and positions to the clients
+   * 
+   */
   
   def update(networkTick: Int )
   {
