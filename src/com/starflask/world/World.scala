@@ -23,15 +23,9 @@ class World() extends Entity{
 		 
 		 val node = this.getComponent(classOf[NodeComponent]);
 		 
-   //vals can be changed, vars can be changed. You can always change the inside tho
-  
-   //val entities = new mutable.HashMap[Int, Entity]()
-  //AtomicSTRef(GameBoard(Map[String, Player](), Map[Int, Boolean]()))
-  
-  //we init the gamedata which will be handed off repeatedly 
- //val gamedata = AtomicSTRef( ReactiveGameData( 0 , Map[Int, HardUnit]() ))
-  
-  
+ 
+
+  var myPlayerId = 0 
   
   var gamedata =  ReactiveGameData( 0 , Map[Int, HardUnit]() )//totally mutable 
   
@@ -44,7 +38,7 @@ class World() extends Entity{
      
      	var importer = new VoxelMagicaImporter( terrain  );
 		//println( System.getProperty("user.home") + "/workspace/UltraBlackBloodDeath/assets/monu9.vox" );
-		  importer.readVoxelMagicaModel(System.getProperty("user.home") + "/git/UltraBlackBloodDeath/assets/monu9.vox");
+		  importer.readVoxelMagicaModel(System.getProperty("user.home") + "/workspace/UltraBlackBloodDeath/assets/monu9.vox");
 		  
 		  terrain.build( assetLibrary )
 		  

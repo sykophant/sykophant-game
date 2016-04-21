@@ -12,7 +12,7 @@ import com.starflask.gameinterface._;
 import com.starflask.gameinterface.GameActionPublisher._;
 
 import com.starflask.util._;
-import com.starflask.util.PublishSubscribeModel._;
+
 
 
 
@@ -33,11 +33,10 @@ class LocalGameActionManager extends Entity   with InputActionExecutor {
  // var listeners: List[GameActionListenComponent => ()] = Nil
 
     
+  //http://jim-mcbeath.blogspot.com/2009/10/simple-publishsubscribe-example-in.html
   
-  
- private val actionPublisher = new GameActionPublisher
-  
-  //var listeners =  IndexedSeq[GameActionListenComponent];
+   val actionPublisher = new GameActionPublisher
+   
 
 	def LocalInputActionManager()
 	{
@@ -50,13 +49,15 @@ class LocalGameActionManager extends Entity   with InputActionExecutor {
 		
 	  var gameAction = 0 //whatever we come up with 
 	  
+	  //a function here will combine the inputaction and the world data and then build  a gameaction 
 	  
+	  //broadcast to all subscribers
 	    actionPublisher.publish(
             MoveAction
           )
 	  
-  	 // broadcastGameAction(listeners, gameAction);
-  	   
+  	
+ 
 		
 	} 
 	
@@ -68,34 +69,9 @@ class LocalGameActionManager extends Entity   with InputActionExecutor {
 	 }
 	
 	
-	def registerListener(updateFunction: => Unit)
-	{
-		 
-	  
-	  //subscribe a function to the publish event (in scala we subscribe the function not the class) 
- 	      actionPublisher.subscribe(  updateFunction    ) //this is looking for a function
- 	      
- 	      
- 	      // Unit required: LocalGameActionManager.this.actionPublisher.S (which expands to) com.starflask.gameinterface.GameActionPublisher.CustomGameAction ⇒ Unit
-	}
-	
-	def broadcastGameAction(listeners: IndexedSeq[_],gameAction: GameAction)
-	{
-	  listeners match {
-	    case actionlisteners: IndexedSeq[GameActionListenComponent] => 
-	      
-	         val it = actionlisteners.iterator
-            while( it.hasNext  ) {
-              it.next().executeGameAction( gameAction) 
-            }
-	         
-	    case   _ => println("No valid listeners ")
-	  }
-	  
-	  
+
+
 	 
-	}
-	
 	
 	
 }

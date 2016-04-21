@@ -8,6 +8,10 @@ public enum InputActionType {
 	TOGGLE_CONSOLE(new GlobalInputEvent(PeripheralType.KEYBOARD,KeyInput.KEY_GRAVE)),
 	RETURN(new GlobalInputEvent(PeripheralType.KEYBOARD,KeyInput.KEY_RETURN)),
 	PRIMARY(new GlobalInputEvent(PeripheralType.MOUSE,MouseInput.BUTTON_LEFT)),
+	FORWARD(new GlobalInputEvent(PeripheralType.KEYBOARD,KeyInput.KEY_W)),
+	BACKWARD(new GlobalInputEvent(PeripheralType.KEYBOARD,KeyInput.KEY_S)),
+	LEFT(new GlobalInputEvent(PeripheralType.KEYBOARD,KeyInput.KEY_A)),
+	RIGHT(new GlobalInputEvent(PeripheralType.KEYBOARD,KeyInput.KEY_D)),
 	;
 	
 	

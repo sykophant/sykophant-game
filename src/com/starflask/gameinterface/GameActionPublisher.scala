@@ -2,14 +2,13 @@ package com.starflask.gameinterface
 
  
   
-import com.starflask.util._;
-import com.starflask.util.PublishSubscribeModel._;
+import com.starflask.util._; 
 
 
 //http://jim-mcbeath.blogspot.com/2009/10/simple-publishsubscribe-example-in.html
 
 //For subscribers of things that turn on and off
-class GameActionPublisher extends Publisher[GameActionPublisher.CustomGameAction]
+class GameActionPublisher extends Publisher[GameActionPublisher.CustomGameAction] 
 
 // use "import AbledPublisher._" to pick up these definitions
 object GameActionPublisher {

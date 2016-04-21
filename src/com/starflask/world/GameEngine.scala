@@ -16,6 +16,15 @@ object GameEngine {
   class UnitStats(health: Int, powerup: Int)
 
   class HardUnit(playerId: Int, callback: String, position: Vector3f, stats: UnitStats)
+  {
+    
+	  def onTick() : Unit = {//return a new unit copy 
+			
+			
+			
+	  }
+    
+  }
   
   case class Player(playerId:Int, name: String, callback: String)
  

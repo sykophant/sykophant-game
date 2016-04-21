@@ -8,6 +8,7 @@ import com.starflask.MonkeyApplication;
 import com.starflask.assets.AssetLibrary;
 import com.starflask.gameinterface.LocalChatManager;
 import com.starflask.gameinterface.LocalGameActionManager;
+import com.starflask.gameinterface._;
 import com.starflask.networking.RemoteClientConnection;
 import com.starflask.peripherals.InputActionComponent;
 import com.starflask.peripherals.InputActionExecutor;
@@ -20,7 +21,7 @@ import com.starflask.terminal.TerminalRenderer;
 import com.starflask.util.EntityAppState;
 import com.starflask.world.World;
 
-class HardGameState extends EntityAppState {
+class  GameState extends EntityAppState {
   
   
   
@@ -28,6 +29,7 @@ class HardGameState extends EntityAppState {
 	var world = new World();
 	var localActionManager  = new LocalGameActionManager();
 	var chatManager = new LocalChatManager();
+	var characterController = new CharacterController();
 	
 	var remoteClientConnection = new RemoteClientConnection(); //our network connection with the server 
 	
@@ -41,18 +43,21 @@ class HardGameState extends EntityAppState {
 	      
 	      
 	      
-	      
-	     // world = new VoxelWorld( app );
-	      //world.build();
+
 	      
 		   this.getComponent(classOf[NodeComponent]).attachChild( world.getComponent(classOf[NodeComponent])  );
 		   
 	      
 	      setEnabled(true);
 	      
-	      localActionManager.setReactiveGameData(world.getReactiveGameData())
-	      localActionManager.registerListener( remoteClientConnection.actionListener )
-	      
+	   
+	      localActionManager.setReactiveGameData(world.gamedata)    //(this is bad practice) we do this so it can combine actions with the world state data to then send info to the server 
+	     
+       //send local actions (like pressing the FIRE button) to the remoteClientConnection
+	      localActionManager.actionPublisher.subscribe( (ev)  =>  remoteClientConnection.gameActionQueue.addEvent(ev)  )   //this should work now
+	     
+	    localActionManager.actionPublisher.subscribe( (ev)  =>  characterController.gameActionQueue.addEvent(ev)  )
+	        
 	   }
 	 
 	 /*
@@ -84,13 +89,27 @@ class HardGameState extends EntityAppState {
 		    }
 		 	
 		 	
-		 	
+		 	/*   Chain of events...
+		 	 *   
+		 	 *   When a movement button like FORWARD is pressed or the mouse is moved, the charcters pos is instantly changed for self 
+		 	 *   
+		 	 *   When a button like FIRE is pressed, this is a GameAction and will be put into a queue-list of game actions
+		 	 *   
+		 	 *   
+		 	 *   Every network tick, the selfs character pos and rotation is sent to the server
+		 	 *   Also, the queued gameactions are flushed and sent to the server where they execute. They are also simulated on the client (just animation).
+		 	 * 
+		 	 * 
+		 	 * 
+		 	 * 
+		 	 * 
+		 	 */
 	  
 	override def update(tpf: Float)
 	{
 		super.update(tpf);
 		
-		hardWorld.update(tpf);
+		world.update(tpf);
 		
 	}
 

@@ -14,7 +14,7 @@ trait Publisher[E] {
         //mixing us in with other classes) to just this trait.
 
     /** True if the subscriber is already in our list. */
-    def isSubscribed(subscriber:S) = {
+    def isSubscribed(subscriber:S) = {   //s is a function that returns Unit
         val subs = lock.synchronized { subscribers }
         subs.exists(_==subscriber)
     }

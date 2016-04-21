@@ -12,8 +12,7 @@ import com.jme3.system.AppSettings;
 import com.jme3.system.JmeContext;
 import com.starflask.display.WindowBuilder;
 import com.starflask.gameinterface.*;
-import com.starflask.states.GameState;
-import com.starflask.states.HardGameState;
+import com.starflask.states.GameState; 
 
 public class UltraBlackBloodDeath extends MonkeyApplication {
 
@@ -36,7 +35,7 @@ public class UltraBlackBloodDeath extends MonkeyApplication {
 	public void simpleInitApp() {
 		 
 	        
-	        this.getStateManager().attach( new HardGameState() ) ;
+	        this.getStateManager().attach( new  GameState() ) ;
 	        
 	       
 	}

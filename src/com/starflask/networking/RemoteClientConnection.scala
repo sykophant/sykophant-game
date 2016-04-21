@@ -5,6 +5,9 @@ import com.starflask.networking.NetworkUtils;
 import com.starflask.networking.ClientListener;
 import com.starflask.gameinterface._;
 
+ 
+import com.starflask.gameinterface.GameActionPublisher._;
+
 import com.jme3.network.service.serializer.ClientSerializerRegistrationsService;
  import java.lang.Runnable;
 //This is opposite of 'GameServerProcess.scala'
@@ -30,9 +33,7 @@ class RemoteClientConnection extends Runnable{
     var lastSampleTime = System.currentTimeMillis
   final val ACTION_SAMPLING_RATE = 33   //ms... this is about 30 fps
   
-  
-  val actionListener = new GameActionListenComponent()  //localgameactionmanager talks to this
-  
+    var gameActionQueue = new GameActionQueue();
   
   def build()
   {
@@ -86,6 +87,7 @@ class RemoteClientConnection extends Runnable{
     
     
   }
+    
     
     
     
