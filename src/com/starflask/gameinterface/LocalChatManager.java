@@ -17,6 +17,8 @@ public class LocalChatManager extends Entity   implements InputActionExecutor{
 	{
 	 this.add(new InputActionComponent( this ));
 	 this.getComponent(InputActionComponent.class).getRawStringInput().setActive(true);
+	 
+	 
 	}
 
 	@Override

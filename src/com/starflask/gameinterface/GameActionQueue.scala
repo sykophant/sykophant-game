@@ -1,7 +1,6 @@
 package com.starflask.gameinterface
 
-import com.starflask.gameinterface.GameActionPublisher._
-
+import com.starflask.gameinterface.GameActionPublisher.CustomGameAction
 
 class GameActionQueue  {
       
@@ -13,6 +12,8 @@ class GameActionQueue  {
     
     
   }
+    
+    
      
    def popEvent =  queuedEvents.take(1).last  //first in first out 
    

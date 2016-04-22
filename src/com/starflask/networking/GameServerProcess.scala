@@ -85,6 +85,7 @@ class GameServerProcess extends Runnable{
     
     NetworkUtils.registerMessageTypes(myServer, listener);
     
+     println("server is listening for packets ")
   }
   
   /*
@@ -94,8 +95,6 @@ class GameServerProcess extends Runnable{
   
   def update(networkTick: Int )
   {
-    println("updating " +networkTick) 
-    
     
 
     

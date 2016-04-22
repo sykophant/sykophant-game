@@ -1,8 +1,7 @@
 package com.starflask.networking;
 
 import com.starflask.util.DebugCategory;
-import com.starflask.util.DebugLogger;
-import com.starflask.networking.*;
+import com.starflask.util.DebugLogger; 
 
 //read https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
 public class GameServer implements Runnable  {
@@ -16,9 +15,11 @@ public class GameServer implements Runnable  {
 		
 		runner = new Thread(serverProcess, "game server thread"); 
 		runner.start();
+		
+		
 	}
 	
-	
+
 	public static void main(String args[])
 	{
 		new GameServer(); //for testing

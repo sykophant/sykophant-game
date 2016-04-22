@@ -9,7 +9,10 @@ import com.starflask.gameinterface._;
 import com.starflask.gameinterface.GameActionPublisher._;
 
 import com.jme3.network.service.serializer.ClientSerializerRegistrationsService;
- import java.lang.Runnable;
+ import java.lang.Runnable; 
+ import com.starflask.networking.NetworkUtils.NetworkMessage
+ import com.starflask.gameinterface.GameActionPublisher._ 
+
 //This is opposite of 'GameServerProcess.scala'
 
 
@@ -40,17 +43,31 @@ class RemoteClientConnection extends Runnable{
       var myClient = Network.connectToServer("localhost", 6143);
        myClient.getServices().removeService(myClient.getServices().getService( classOf[ClientSerializerRegistrationsService] ));
      
-       myClient.start();
+       myClient.start(); //connect to the server 
+       
        
        var myListener = new ClientListener();
    
      NetworkUtils.registerMessageTypes(myClient, myListener );
+     
+       myClient.send(new NetworkMessage( new JoinServerAction( buildJoinServerParams()    )  ) )
+     
+        println("sent join server packet ")
     
   }
   
   
+  def buildJoinServerParams():Map[String,Any]=
+  {
+    Map() //A blank one
+  }
+  
+  
+  
+  
   override def run()
   {
+    build()
     while(true)
     {
       loop( update() , ACTION_SAMPLING_RATE );

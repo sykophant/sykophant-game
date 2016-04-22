@@ -53,7 +53,7 @@ class LocalGameActionManager extends Entity   with InputActionExecutor {
 	  
 	  //broadcast to all subscribers
 	    actionPublisher.publish(
-            MoveAction
+            MoveAction( Map() )//fill w values
           )
 	  
   	
