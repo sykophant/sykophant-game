@@ -38,7 +38,7 @@ class RemoteClientConnection extends Runnable{
   
     var gameActionQueue = new GameActionQueue();
   
-  def build()
+  def build(playerName:String)  //bundle up playername?
   {
       var myClient = Network.connectToServer("localhost", 6143);
        myClient.getServices().removeService(myClient.getServices().getService( classOf[ClientSerializerRegistrationsService] ));
@@ -50,24 +50,18 @@ class RemoteClientConnection extends Runnable{
    
      NetworkUtils.registerMessageTypes(myClient, myListener );
      
-       myClient.send(new NetworkMessage( new JoinServerAction( buildJoinServerParams()    )  ) )
+       myClient.send(new NetworkMessage( new JoinServerAction(  playerName   )  ) )
      
         println("sent join server packet ")
     
   }
   
-  
-  def buildJoinServerParams():Map[String,Any]=
-  {
-    Map() //A blank one
-  }
-  
-  
+   
   
   
   override def run()
   {
-    build()
+    build( "PlayerOne"  )   //somehow get this from game settings
     while(true)
     {
       loop( update() , ACTION_SAMPLING_RATE );

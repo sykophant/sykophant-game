@@ -23,10 +23,31 @@ object GameActionPublisher {
      }
      
      
-    @Serializable case class NoAction(params: Map[String,Any]) extends CustomGameAction  {  def this() = this(Map()) }
-    @Serializable case class MoveAction(params: Map[String,Any]) extends CustomGameAction {  def this() = this(Map()) }
-    @Serializable case class FireAction(params: Map[String,Any]) extends CustomGameAction {  def this() = this(Map()) }
-     @Serializable  case class JoinServerAction(params: Map[String,Any]) extends CustomGameAction {    def this() = this(Map())  }
+    @Serializable case class NoAction(params: Map[String,Any]) extends CustomGameAction  {  
+      def this() = this(Map())
+      }
+   
+    @Serializable case class MoveAction(tid:Int, uid:Int, newPos:Vector3f, newFac: Vector3f ) extends CustomGameAction {  
+      def this() = this(0,-1,new Vector3f(0,0,0),new Vector3f(0,0,0)) 
+        
+       var tickId = tid
+       var unitId = uid
+       var position = newPos
+       var facing = newFac
+       
+      
+      }
+   
+    @Serializable case class FireAction(params: Map[String,Any]) extends CustomGameAction { 
+      def this() = this(Map()) 
+      }
+   
+    @Serializable  case class JoinServerAction(name: String) extends CustomGameAction {  
+        def this() = this( "New Player" )  
+        
+        var playerName = name
+        
+      }
 
        
      //Registration error: no-argument constructor not found on:class com.starflask.gameinterface.GameActionPublisher$JoinServerAct

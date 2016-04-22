@@ -5,6 +5,7 @@ import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.starflask.networking.NetworkUtils.NetworkMessage 
 import com.starflask.gameinterface.GameActionPublisher._ 
+import com.starflask.util.Vector3f 
 
 // see https://github.com/jMonkeyEngine/jmonkeyengine/tree/master/jme3-networking/src/main/java/com/jme3/network
 class ServerListener extends MessageListener[Any] {
@@ -30,15 +31,23 @@ class ServerListener extends MessageListener[Any] {
      
      def processMessage(action: CustomGameAction) = action match
      {
-          case j: JoinServerAction => onJoinServer( /*j.typeName*/ )
+          case j: JoinServerAction => onJoinServer( j.playerName )
           case _ => "No message"
      }
      
      
-     def onJoinServer()
+     def onJoinServer(playerName: String )
      {
-       println("somebody joined our server ")
+       println("somebody joined our server " + playerName)
+       
+      
      }
+     /*
+     
+     def matchList[A: TypeTag](list: List[A]) = list match {
+  case strlist: List[String @unchecked] if typeOf[A] =:= typeOf[String] => println("A list of strings!")
+  case intlist: List[Int @unchecked] if typeOf[A] =:= typeOf[Int] => println("A list of ints!")
+}*/
      
      
     
