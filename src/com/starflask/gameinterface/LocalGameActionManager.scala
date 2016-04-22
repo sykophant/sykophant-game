@@ -37,29 +37,38 @@ class LocalGameActionManager extends Entity   with InputActionExecutor {
   
    val actionPublisher = new GameActionPublisher
    
+   var gamedata = new ReactiveGameData //need to keep setting this .... need all 20 though!!
+   
 
 	def LocalInputActionManager()
 	{
 		this.add(new InputActionComponent( this ));
 	}
+   
+   
 
 	override def executeInputAction(inputAction: InputActionType ,pressed: Boolean ) {
 		// RUn client side simulation stuff
 		//send the action to the server via RemoteClientConnection
 		
-	  var gameAction = 0 //whatever we come up with 
+	  var gameAction = buildGameAction(inputAction, pressed, gamedata) //whatever we come up with 
 	  
 	  //a function here will combine the inputaction and the world data and then build  a gameaction 
 	  
 	  //broadcast to all subscribers
 	    actionPublisher.publish(
-            MoveAction( Map() )//fill w values
-          )
-	  
-  	
- 
+           gameAction
+         )
+	   
 		
 	} 
+	
+	def buildGameAction( inputAction: InputActionType ,pressed: Boolean, gamedata: ReactiveGameData)= inputAction match
+	{
+     //case j: InputActionType.PRIMARY => FireAction(gamedata.networkTick,)
+	  case _ => FireAction(gamedata.networkTick,gamedata.getFocusedUnitId(), gamedata.getPlayerId(), 
+	      gamedata.getFocusedUnitId().getPosition(), gamedata.getFocusedUnitId().getFacing() )
+	}
 	
 	 var reactiveGameData =   ReactiveGameData(0, Map[Int, HardUnit]())
 	 

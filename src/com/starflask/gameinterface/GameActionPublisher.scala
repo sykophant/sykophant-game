@@ -34,12 +34,35 @@ object GameActionPublisher {
        var unitId = uid
        var position = newPos
        var facing = newFac
-       
+            
+      }
+    
+     @Serializable case class SpawnUnitAction(tid:Int, uid:Int, pid:Int, pos:Vector3f, fac:Vector3f ) extends CustomGameAction { 
       
+       var tickId = tid
+       var unitId = uid
+       var position = pos
+       var facing = fac
+       var ownerId = pid
+       
+      }
+     
+     @Serializable case class UnitStatChangeAction(tid:Int, uid:Int, newStats: Map[String,Int] ) extends CustomGameAction { 
+      
+       var tickId = tid
+       var unitId = uid
+       var stats = newStats  //make held weapon a stat 
+       
       }
    
-    @Serializable case class FireAction(params: Map[String,Any]) extends CustomGameAction { 
-      def this() = this(Map()) 
+    @Serializable case class FireAction( tid:Int, uid:Int, pid:Int, pos:Vector3f, fac:Vector3f  ) extends CustomGameAction { 
+      
+      var tickId = tid
+       var unitId = uid
+       var position = pos
+       var facing = fac
+       var ownerId = pid
+       
       }
    
     @Serializable  case class JoinServerAction(name: String) extends CustomGameAction {  

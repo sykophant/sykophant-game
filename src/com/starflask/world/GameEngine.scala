@@ -30,7 +30,10 @@ object GameEngine {
  
   
   case class ReactiveGameData(networkTick: Int, units: Map[Int, HardUnit] ) //this is the state that gets passed around each frame... 
-  
+  {
+    
+    def this() = this(0,Map() ) 
+  }
   
   
   sealed trait GameAction

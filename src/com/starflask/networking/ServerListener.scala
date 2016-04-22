@@ -31,7 +31,7 @@ class ServerListener extends MessageListener[Any] {
      
      def processMessage(action: CustomGameAction) = action match
      {
-          case j: JoinServerAction => onJoinServer( j.playerName )
+          case j: JoinServerAction => onJoinServer( j.playerName )  //throw into a queue?
           case _ => "No message"
      }
      
