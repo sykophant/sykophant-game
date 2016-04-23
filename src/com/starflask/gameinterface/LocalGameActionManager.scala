@@ -18,6 +18,7 @@ import com.starflask.util._;
 
 import com.starflask.world.GameEngine._;
 import scala.collection.mutable.IndexedSeq;
+import com.starflask.units.HardUnit
  
 
 class LocalGameActionManager extends Entity   with InputActionExecutor {
@@ -68,13 +69,27 @@ class LocalGameActionManager extends Entity   with InputActionExecutor {
 	  
 	  
 	      var unitId = gamedata.getFocusedUnitId()
-	      var unit = gamedata.getUnit(unitId)
+	      var unit_option = gamedata.getUnit(unitId)
 	      
-	    inputAction match
-	    {
-       case _ => FireAction(gamedata.networkTick,unitId, gamedata.getPlayerId(), 
-	     unit.getPosition(),unit.getFacing() )
-	    }
+	      unit_option match 
+	      {
+	        case s:Some[HardUnit] => 
+	          
+	          var unit = s.get
+	          
+	             inputAction match
+	           {
+                case  InputActionType.PRIMARY  => FireAction(gamedata.networkTick,unitId, gamedata.localPlayerId, 
+	                 unit.getPosition(),unit.getFacing() )
+	            
+	              case _ => print(" no action from buildgameaction"); new NoAction
+	           
+	            }
+	        case _ => print(" no unit from buildgameaction"); new NoAction
+	      }
+	      
+	 
+	      
 	}
 	
 	 var reactiveGameData =   ReactiveGameData(0, Map[Int, HardUnit]())

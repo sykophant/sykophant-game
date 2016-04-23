@@ -4,6 +4,7 @@ import com.starflask.util.Vector3f
 
  
  import scala.concurrent.Future
+ import com.starflask.units.HardUnit
 
 //This is a thread-safe deterministic engine that manipulates ReactiveGameData in a function way
  
@@ -13,20 +14,8 @@ object GameEngine {
   
  
   
-  class UnitStats(health: Int, powerup: Int)
-
-  class HardUnit(playerId: Int, callback: String, position: Vector3f, stats: UnitStats)
-  {
-    
-	  def onTick() : Unit = {//return a new unit copy 
-			
-			
-			
-	  }
-    
-  }
-  
-  case class Player(playerId:Int, name: String, callback: String)
+ 
+  case class Player(playerId:Int, name: String)
  
   
   case class ReactiveGameData(networkTick: Int, units: Map[Int, HardUnit] ) //this is the state that gets passed around each frame... 
@@ -34,17 +23,18 @@ object GameEngine {
     
     def this() = this(0,Map() ) 
     
+    //this is the player list
+    var players =  new Array[Player](64)
     
-	      def getFocusedUnitId():Int
-	      {
-      
-	      }
-	       def getUnit(unitId:Int):Unit
-	       {
-	         
-	       }
+    var localPlayerId = -1
+    
+    var focusedUnit = -1
+    
+	      def getFocusedUnitId():Int = focusedUnit
 	      
-	      def getPlayerId()
+	      def getUnit(unitId:Int):Option[HardUnit] = units.lift(unitId)
+	      
+	      def getPlayerId():Int = localPlayerId
     
     
   }

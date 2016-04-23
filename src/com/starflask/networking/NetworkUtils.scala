@@ -22,7 +22,7 @@ object NetworkUtils {  //like static
         var action = a
         
          def this() {
-            this(  NoAction( Map()   ))
+            this(  NoAction(   ))
           }  
         
      }

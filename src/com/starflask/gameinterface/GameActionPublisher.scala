@@ -23,8 +23,8 @@ object GameActionPublisher {
      }
      
      
-    @Serializable case class NoAction(params: Map[String,Any]) extends CustomGameAction  {  
-      def this() = this(Map())
+    @Serializable case class NoAction() extends CustomGameAction  {  
+      //def this() = this() not needed
       }
    
     @Serializable case class MoveAction(tid:Int, uid:Int, newPos:Vector3f, newFac: Vector3f ) extends CustomGameAction {  

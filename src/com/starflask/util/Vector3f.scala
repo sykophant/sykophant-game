@@ -1,7 +1,7 @@
 package com.starflask.util
 
   class Vector3f(val x:Float = 0.0f, val y:Float = 0.0f, val z:Float = 0.0f){
-  
+     
    def add(v:Vector3f) = new Vector3f(x + v.x, y + v.y, z + v.z)
 
     def subtract(v:Vector3f) = new Vector3f(x - v.x, y - v.y, z - v.z)

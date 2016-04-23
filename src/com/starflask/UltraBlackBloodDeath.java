@@ -27,8 +27,8 @@ public class UltraBlackBloodDeath extends MonkeyApplication {
 		//settings.setAudioRenderer(AppSettings.JOAL);
 		//app.setSettings(settings);  
 		
-		//app.start( JmeContext.Type.Headless );
-		app.start();
+	 //app.start( JmeContext.Type.Headless );
+		app.start(JmeContext.Type.Display);
 	}
 
 	@Override

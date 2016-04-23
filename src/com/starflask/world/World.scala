@@ -15,6 +15,7 @@ import com.starflask.assets._
 
 import com.starflask.renderable._
 import com.starflask.starvoxel._
+import com.starflask.units.HardUnit
 
 class World() extends Entity{
   
