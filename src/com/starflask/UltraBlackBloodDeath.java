@@ -28,7 +28,7 @@ public class UltraBlackBloodDeath extends MonkeyApplication {
 		//app.setSettings(settings);  
 		
 	 //app.start( JmeContext.Type.Headless );
-		app.start(JmeContext.Type.Display);
+		app.start( );
 	}
 
 	@Override
