@@ -63,11 +63,18 @@ class LocalGameActionManager extends Entity   with InputActionExecutor {
 		
 	} 
 	
-	def buildGameAction( inputAction: InputActionType ,pressed: Boolean, gamedata: ReactiveGameData)= inputAction match
-	{
-     //case j: InputActionType.PRIMARY => FireAction(gamedata.networkTick,)
-	  case _ => FireAction(gamedata.networkTick,gamedata.getFocusedUnitId(), gamedata.getPlayerId(), 
-	      gamedata.getFocusedUnitId().getPosition(), gamedata.getFocusedUnitId().getFacing() )
+	def buildGameAction( inputAction: InputActionType ,pressed: Boolean, gamedata: ReactiveGameData) :CustomGameAction=
+	{    
+	  
+	  
+	      var unitId = gamedata.getFocusedUnitId()
+	      var unit = gamedata.getUnit(unitId)
+	      
+	    inputAction match
+	    {
+       case _ => FireAction(gamedata.networkTick,unitId, gamedata.getPlayerId(), 
+	     unit.getPosition(),unit.getFacing() )
+	    }
 	}
 	
 	 var reactiveGameData =   ReactiveGameData(0, Map[Int, HardUnit]())

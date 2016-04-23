@@ -33,6 +33,20 @@ object GameEngine {
   {
     
     def this() = this(0,Map() ) 
+    
+    
+	      def getFocusedUnitId():Int
+	      {
+      
+	      }
+	       def getUnit(unitId:Int):Unit
+	       {
+	         
+	       }
+	      
+	      def getPlayerId()
+    
+    
   }
   
   
