@@ -191,11 +191,13 @@ public class RawInputManager extends AbstractAppState implements RawInputListene
 	 */
 	public InputActionComponent focusedInputElement() 
 	{
+		
 		if( app.getStateManager().getState(TerminalState.class).isEnabled())
 		{
 			return app.getStateManager().getState(TerminalState.class).getComponent(InputActionComponent.class);
 		}
-		if( app.getStateManager().getState(GameState.class).isEnabled())
+		
+		if( app.getStateManager().getState(GameState.class)!=null  && app.getStateManager().getState(GameState.class).isEnabled())
 		{
 			return app.getStateManager().getState(GameState.class).getFocusedInputActionComponent() ;
 		}

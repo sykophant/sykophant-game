@@ -38,7 +38,7 @@ public class TerminalMenu {
 	
 	public void receiveCommand(String cmd)
 	{
-		respondToCommand(cmd);
+		respondToCommand(cmd.toLowerCase());
 	}
 	
 	

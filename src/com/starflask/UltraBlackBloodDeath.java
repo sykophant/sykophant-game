@@ -35,7 +35,7 @@ public class UltraBlackBloodDeath extends MonkeyApplication {
 	public void simpleInitApp() {
 		 
 	        
-	        this.getStateManager().attach( new  GameState() ) ;
+	     //   this.getStateManager().attach( new  GameState() ) ;
 	        
 	       
 	}
