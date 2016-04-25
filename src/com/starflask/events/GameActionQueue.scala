@@ -1,8 +1,9 @@
-package com.starflask.gameinterface
+package com.starflask.events
 
-import com.starflask.gameinterface.GameActionPublisher.CustomGameAction
+import com.starflask.events.GameActionPublisher.CustomGameAction
+import com.starflask.events.GenericEventQueue
 
-class GameActionQueue  {
+class GameActionQueue extends GenericEventQueue {
       
     var queuedEvents: List[CustomGameAction] = Nil
     

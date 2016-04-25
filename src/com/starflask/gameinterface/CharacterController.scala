@@ -1,6 +1,7 @@
 package com.starflask.gameinterface
 
 import com.starflask.world.GameEngine._ 
+import com.starflask.events.GameActionQueue
 
 class CharacterController {
   

@@ -4,7 +4,7 @@ import com.jme3.network.MessageListener;
 import com.jme3.network.HostedConnection;
 import com.jme3.network.Message;
 import com.starflask.networking.NetworkUtils.NetworkMessage 
-import com.starflask.gameinterface.GameActionPublisher._ 
+import com.starflask.events.GameActionPublisher._ 
 import com.starflask.util.Vector3f 
 
 // see https://github.com/jMonkeyEngine/jmonkeyengine/tree/master/jme3-networking/src/main/java/com/jme3/network

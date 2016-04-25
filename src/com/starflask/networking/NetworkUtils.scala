@@ -6,8 +6,8 @@ import com.jme3.network.MessageListener;
 import com.jme3.network.AbstractMessage;
 import com.jme3.network.serializing.Serializer;
 import com.jme3.network.serializing.Serializable;
-import com.starflask.gameinterface.GameActionPublisher.CustomGameAction
-import com.starflask.gameinterface.GameActionPublisher._
+import com.starflask.events.GameActionPublisher.CustomGameAction
+import com.starflask.events.GameActionPublisher._
 import java.nio.ByteBuffer
 
 import scala.reflect.ClassTag

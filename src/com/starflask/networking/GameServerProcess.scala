@@ -5,6 +5,7 @@ package com.starflask.networking
 import com.jme3.network._;
 import com.starflask.networking._;
 import com.jme3.network.service.serializer.ServerSerializerRegistrationsService;
+import com.starflask.events.GameActionQueue
 
 /*
  * Just like sands..
@@ -33,6 +34,8 @@ class GameServerProcess extends Runnable{
   final val NETWORK_TICK_RATE = 66  //66 millis
   
    var networkTick = 0
+   
+    var gameActionQueue = new GameActionQueue();
   
   override def run()
   {

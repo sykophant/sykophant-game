@@ -1,10 +1,8 @@
-package com.starflask.gameinterface
+package com.starflask.events
 
  
   
-import com.starflask.util._; 
-
-import com.jme3.network.serializing.Serializer;
+import com.starflask.util._
 import com.jme3.network.serializing.Serializable;
 
 
@@ -79,7 +77,7 @@ object GameActionPublisher {
      
     object CustomGameAction { 
         
-       def apply(b:Boolean) = if (b) MoveAction else FireAction
+       //def apply(b:Boolean) = if (b) MoveAction else FireAction
        
        }
     

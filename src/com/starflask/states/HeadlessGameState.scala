@@ -107,14 +107,6 @@ import com.starflask.networking.GameServerProcess
 
 	 
 
-
-		def  getFocusedInputActionComponent() = {
-			 if(chatManager.chatIsActive())
-			 {
-				   chatManager.getComponent(classOf[InputActionComponent]);
-			 }
-			 
-			  localActionManager.getComponent(classOf[InputActionComponent]); //controls character movement 
-		}
+ 
 	  
 	}
