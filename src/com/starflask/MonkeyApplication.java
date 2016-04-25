@@ -107,6 +107,8 @@ public abstract class MonkeyApplication extends LegacyApplication {
     static AdaptiveDisplay adaptiveDisplay ;
     
     
+    
+    
     private Engine ashleyEngine = new Engine();
 
     private class AppActionListener implements ActionListener {

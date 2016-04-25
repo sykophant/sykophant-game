@@ -9,7 +9,7 @@ import com.starflask.peripherals.InputActionComponent;
 import com.starflask.peripherals.InputActionExecutor;
 import com.starflask.peripherals.InputActionType;
 import com.starflask.gameinterface._;
-import com.starflask.gameinterface.GameActionPublisher._;
+import com.starflask.events.GameActionPublisher._
 
 import com.starflask.util._;
 
@@ -19,7 +19,7 @@ import com.starflask.util._;
 import com.starflask.world.GameEngine._;
 import scala.collection.mutable.IndexedSeq;
 import com.starflask.units.HardUnit
-import com.starflask.events.GameActionPublisher
+import com.starflask.events.GameActionPublisher 
  
 
 class LocalGameActionManager extends Entity   with InputActionExecutor {

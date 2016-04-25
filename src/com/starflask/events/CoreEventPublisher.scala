@@ -31,6 +31,11 @@ object CoreEventPublisher {
       
       }
     
+    @Serializable case class JoinServerEvent(ipAddress: String  ) extends CoreEvent {  
+         def this() = this( "localhost" ) 
+      
+      }
+    
   
     
      

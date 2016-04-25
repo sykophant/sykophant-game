@@ -3,12 +3,12 @@ package com.starflask.terminal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.starflask.terminal.SubMenus.TerminalSubMenu;
+import com.starflask.terminal.SubMenus.TerminalSubMen;
 import com.starflask.terminal.SubMenus.TerminalSubMenuHelp;
 
 public class TerminalMenu {
 	
-	List<TerminalSubMenu> subMenus = new ArrayList<TerminalSubMenu>();
+	List<TerminalSubMen> subMenus = new ArrayList<TerminalSubMen>();
 	
 	
 	TerminalRenderer terminalRenderer;
@@ -44,7 +44,7 @@ public class TerminalMenu {
 	
 	private void respondToCommand(String cmd)
 	{
-		for(TerminalSubMenu sm: subMenus)
+		for(TerminalSubMen sm: subMenus)
 		{
 			String response = sm.respondToCommand(cmd);
 			

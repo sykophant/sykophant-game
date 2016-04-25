@@ -1,6 +1,6 @@
 package com.starflask.terminal.SubMenus;
 
-public class TerminalSubMenuHelp extends TerminalSubMenu {
+public class TerminalSubMenuHelp extends TerminalSubMen {
 	
 	
 	@Override public void build()
@@ -13,12 +13,12 @@ public class TerminalSubMenuHelp extends TerminalSubMenu {
 			}
 			
 		});*/
-		menuOptions.add(new TerminalMenuOption("Host - Host a new match"));
-		menuOptions.add(new TerminalMenuOption("Join - Join a multiplayer match using a remote or local IP address"));
-		menuOptions.add(new TerminalMenuOption("List - Display a list of public matches to join"));
-		menuOptions.add(new TerminalMenuOption("Library - Display a list of your blackprints"));
-		menuOptions.add(new TerminalMenuOption("Get - Find and download custom maps and blackprints"));
-		menuOptions.add(new TerminalMenuOption("Edit - Enter the map editor"));
+		menuOptions.add(new TerminalMenuOpti("Host - Host a new match"));
+		menuOptions.add(new TerminalMenuOpti("Join - Join a multiplayer match using a remote or local IP address"));
+		menuOptions.add(new TerminalMenuOpti("List - Display a list of public matches to join"));
+		menuOptions.add(new TerminalMenuOpti("Library - Display a list of your blackprints"));
+		menuOptions.add(new TerminalMenuOpti("Get - Find and download custom maps and blackprints"));
+		menuOptions.add(new TerminalMenuOpti("Edit - Enter the map editor"));
 		
 	//	menuOptions.add(new TerminalMenuOption("bots - Add AI bots to a match you are hosting"));
 	}

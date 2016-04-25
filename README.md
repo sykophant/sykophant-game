@@ -3,8 +3,11 @@ A completely moddable multiplayer quake clone using a voxel map editor and json 
 
 https://jmonkeyengine.org/wiki/doku.php?id=setting_up_eclipse_to_build_jme
 
-1. get voxel rendering
-Ashley for entity component system
+-convert terminal menu to scala
+-make the Host option publish a CoreEvent which sets of a chain of events - starts a dedicated server
+-made the Join option with an ip addres given publish another CordEvent which will make a remoteclient who joins that server
+-When a new client Joins, spawn a unit and make the camera focus on him.  The person who is the host will have a host and client running.
+
 
 ## Backburner
 * Needs lots of particles

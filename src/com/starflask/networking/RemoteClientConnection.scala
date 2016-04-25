@@ -13,9 +13,9 @@ import com.jme3.network.service.serializer.ClientSerializerRegistrationsService;
  import com.starflask.networking.NetworkUtils.NetworkMessage
  import com.starflask.events.GameActionPublisher._ 
 
-//This is 
- import com.starflask.events.GameActionQueueopposite of 'GameServerProcess.scala'
-
+//This is opposite of 'GameServerProcess.scala'
+ import com.starflask.events.GameActionQueue
+  
 
 
 object TestClient {
