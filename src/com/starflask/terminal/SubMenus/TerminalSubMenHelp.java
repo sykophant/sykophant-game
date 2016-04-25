@@ -1,6 +1,6 @@
 package com.starflask.terminal.SubMenus;
 
-public class TerminalSubMenuHelp extends TerminalSubMen {
+public class TerminalSubMenHelp extends TerminalSubMen {
 	
 	
 	@Override public void build()

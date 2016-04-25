@@ -18,8 +18,8 @@ import com.starflask.util._;
 
 import com.starflask.world.GameEngine._;
 import scala.collection.mutable.IndexedSeq;
-import com.starflask.units.HardUnit
-import com.starflask.events.GameActionPublisher 
+import com.starflask.units.HardUnit 
+import com.starflask.events.GameActionPublisher
  
 
 class LocalGameActionManager extends Entity   with InputActionExecutor {

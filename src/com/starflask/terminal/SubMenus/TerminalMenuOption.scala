@@ -1,11 +1,9 @@
 package com.starflask.terminal.SubMenus
 
-class TerminalMenuOption {
-  var title = new String("no title");
-	
-	def TerminalMenuOption( title:String) {
-		 this.title=title;
-	}
+class TerminalMenuOption(t:String)  {
+  var title = t;
+	 
+	 
 
 	def  render():String = {
 		 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.starflask.terminal.SubMenus.TerminalSubMen;
-import com.starflask.terminal.SubMenus.TerminalSubMenuHelp;
+import com.starflask.terminal.SubMenus.TerminalSubMenHelp;
 
 public class TerminalMenu {
 	
@@ -30,7 +30,7 @@ public class TerminalMenu {
 
 	private void build()
 	{
-		subMenus.add( new TerminalSubMenuHelp() );
+		subMenus.add( new TerminalSubMenHelp() );
 		
 		
 	}

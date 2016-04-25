@@ -22,7 +22,7 @@ object CoreEventPublisher {
      }
      
      
-    @Serializable case class NoAction() extends CoreEvent  {  
+    @Serializable case class NoEvent() extends CoreEvent  {  
       //def this() = this() not needed
       }
    
