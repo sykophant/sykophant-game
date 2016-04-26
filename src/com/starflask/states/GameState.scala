@@ -22,9 +22,7 @@ import com.starflask.util.EntityAppState;
 import com.starflask.world.World;
 
 class  GameState extends EntityAppState {
-  
-  
-  
+   
  
 	var world = new World();
 	var localActionManager  = new LocalGameActionManager();
@@ -41,10 +39,7 @@ class  GameState extends EntityAppState {
 	      app match { case a: MonkeyApplication =>  world.build( this.getComponent(classOf[NodeComponent]), a.getAssetLibrary()   ); }
 	      //var lib = ((MonkeyApplication) app).getAssetLibrary();
 	      
-	      
-	      
-
-	      
+	      	      
 		   this.getComponent(classOf[NodeComponent]).attachChild( world.getComponent(classOf[NodeComponent])  );
 		   
 	      

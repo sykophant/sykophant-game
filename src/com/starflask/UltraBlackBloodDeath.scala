@@ -35,8 +35,8 @@ class UltraBlackBloodDeath extends MonkeyApplication {
 		 
 	        
 	     //   this.getStateManager().attach( new  GameState() ) ;
-	        
-	       
+	       var terminalState = this.getStateManager.getState(classOf[TerminalState]); 
+	     terminalState.terminalMenu.coreEventPublisher.subscribe { ev => responseToCoreEvent(ev) }
 	}
 	
 	override def simpleUpdate(tpf: Float) {
@@ -44,15 +44,16 @@ class UltraBlackBloodDeath extends MonkeyApplication {
 	}
 	
 	
-	def responseToCoreEvent(event: CoreEvent) = event match {
-	  case h: StartServerEvent => hostGame(h); 
+	  def responseToCoreEvent(event: CoreEvent) = event match {
+	  case h: HostServerEvent => hostGame(h); 
 	  case g: JoinServerEvent => joinGame(g); 
+	  
 	  case _ => println("invalid event")
 	    
 	}
 	
 	
-	def hostGame(ev: StartServerEvent)
+	def hostGame(ev: HostServerEvent)
 	{
 	   this.getStateManager().attach( new  HeadlessGameState() ) ;
 	   //collapse the terminal
@@ -61,6 +62,7 @@ class UltraBlackBloodDeath extends MonkeyApplication {
 	
 	def joinGame(ev: JoinServerEvent)
 	{
+	 println("joining");
 	   this.getStateManager().attach( new  GameState() ) ;
 	}
 	

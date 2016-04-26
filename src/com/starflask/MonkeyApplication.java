@@ -67,7 +67,7 @@ import com.starflask.renderable.AdaptiveDisplay;
 import com.starflask.states.CustomStatsAppState;
 import com.starflask.states.TerminalState;
  
-
+import com.starflask.events.*;
 /**
  * <code>SimpleApplication</code> is the base class for all jME3 Applications.
  * <code>SimpleApplication</code> will display a statistics view
@@ -331,6 +331,7 @@ public abstract class MonkeyApplication extends LegacyApplication {
             stateManager.getState(StatsAppState.class).setDisplayStatView(show);
         }
     }
+     
 
     public abstract void simpleInitApp();
 

@@ -1,8 +1,13 @@
 package com.starflask.terminal.SubMenus
 
-abstract class TerminalSubMenu {
+import com.starflask.events.CoreEventPublisher.CoreEvent
+import com.starflask.events.CoreEventPublisher.NoEvent
+
+ class TerminalSubMenu {
   
   
+	var menuOptions = List[TerminalMenuOption]() 
+	
   def TerminalSubMenu()
 	{
 		build();
@@ -34,12 +39,11 @@ abstract class TerminalSubMenu {
 	}
 	
 	
-	var menuOptions : List[TerminalMenuOption];
 
-	  def  respondToCommand( cmd:String):String ;
-	def  build();
-	def   getTitle():String;
-	def   getDescription():String;
+	  def  respondToCommand( cmd:String):CoreEvent = new NoEvent;
+	def  build():Unit = Unit;
+	def   getTitle():String = "No Title";
+	def   getDescription():String = "No Description";
 	
 	
 }

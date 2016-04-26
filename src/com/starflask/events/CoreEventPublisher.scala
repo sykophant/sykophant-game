@@ -10,7 +10,7 @@ import com.starflask.events.GameActionPublisher
 //http://jim-mcbeath.blogspot.com/2009/10/simple-publishsubscribe-example-in.html
 
 //For subscribers of things that turn on and off
-class CoreEventPublisher extends Publisher[GameActionPublisher.CustomGameAction] 
+class CoreEventPublisher extends Publisher[ CoreEventPublisher.CoreEvent ] 
 
 // use "import AbledPublisher._" to pick up these definitions
 object CoreEventPublisher {
@@ -26,13 +26,18 @@ object CoreEventPublisher {
       //def this() = this() not needed
       }
    
-    @Serializable case class StartServerEvent(  ) extends CoreEvent {  
-     // def this() = this( ) 
+    @Serializable case class HostServerEvent(args  : Array[String]  ) extends CoreEvent {  
+       def this() = this( new  Array[String](0) ) 
       
       }
     
-    @Serializable case class JoinServerEvent(ipAddress: String  ) extends CoreEvent {  
-         def this() = this( "localhost" ) 
+    @Serializable case class JoinServerEvent(args  : Array[String]  ) extends CoreEvent {  
+             def this() = this( new  Array[String](0) ) 
+      
+      }
+    
+      @Serializable case class TerminalRenderEvent(s  : String  ) extends CoreEvent {  
+             def this() = this( "No Message" ) 
       
       }
     
