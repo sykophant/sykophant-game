@@ -7,8 +7,7 @@ import com.jme3.app.state.AppStateManager;
 import com.starflask.MonkeyApplication;
 import com.starflask.assets.AssetLibrary;
 import com.starflask.gameinterface.LocalChatManager;
-import com.starflask.gameinterface.LocalGameActionManager;
-import com.starflask.gameinterface._;
+import com.starflask.gameinterface.LocalGameActionManager; 
 import com.starflask.networking.RemoteClientConnection;
 import com.starflask.peripherals.InputActionComponent;
 import com.starflask.peripherals.InputActionExecutor;
@@ -20,6 +19,8 @@ import com.starflask.terminal.TerminalMenu;
 import com.starflask.terminal.TerminalRenderer;
 import com.starflask.util.EntityAppState;
 import com.starflask.world.World;
+import com.starflask.gameinterface.CharacterController
+import com.starflask.events.GameActionPublisher.CustomGameAction;
 
 class  GameState extends EntityAppState {
    
@@ -29,10 +30,16 @@ class  GameState extends EntityAppState {
 	var chatManager = new LocalChatManager();
 	var characterController = new CharacterController();
 	
-	var remoteClientConnection = new RemoteClientConnection(); //our network connection with the server 
+	var remoteClientConnection = new RemoteClientConnection( world.gameActionExecutor  ); //our network connection with the server 
 	
 	override def initialize( stateManager: AppStateManager,  app: Application) {
 	      super.initialize(stateManager, app); 
+	      
+	      
+	      
+	      var clientConnection = new Thread( remoteClientConnection)
+	      clientConnection.start() 
+	      
 	       
 	      this.add(new NodeComponent() ); 
 	      

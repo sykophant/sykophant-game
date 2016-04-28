@@ -69,6 +69,13 @@ object GameActionPublisher {
         var playerName = name
         
       }
+    
+     @Serializable  case class NetworkTickAction(count: Int) extends CustomGameAction {  
+        def this() = this( 0 )  
+        
+        var tickCount = count
+        
+      }
 
        
      //Registration error: no-argument constructor not found on:class com.starflask.gameinterface.GameActionPublisher$JoinServerAct

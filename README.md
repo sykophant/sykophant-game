@@ -9,6 +9,12 @@ https://jmonkeyengine.org/wiki/doku.php?id=setting_up_eclipse_to_build_jme
 -When a new client Joins, spawn a unit and make the camera focus on him.  The person who is the host will have a host and client running.
 
 
+
+### Current Flow
+- when you do a 'host' it makes a dedicated server - you just say right in thee termianl
+- when you do a 'join' it joins the server and then the server makes a unit spawn for you
+
+
 ## Backburner
 * Needs lots of particles
 * cool respawn animation (particles) and sound

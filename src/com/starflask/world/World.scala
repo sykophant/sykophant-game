@@ -16,6 +16,7 @@ import com.starflask.assets._
 import com.starflask.renderable._
 import com.starflask.starvoxel._
 import com.starflask.units.HardUnit
+import com.starflask.events.GameActionPublisher.CustomGameAction
 
 class World() extends Entity{
   
@@ -28,10 +29,12 @@ class World() extends Entity{
 
   var myPlayerId = 0 
   
-  var gamedata =  ReactiveGameData( 0 , Map[Int, HardUnit]() )//totally mutable 
+  var gamedata =  ReactiveGameData( 0 , Map[Int, HardUnit]() )//gets replaced by a new copy each time
   
   
   val terrain = new VoxelTerrain();
+  
+  var gameActionExecutor = new GameActionExecutor(gamedata);
    
    def build( node: Node, assetLibrary: AssetLibrary )   =  new Node( )
    {
@@ -39,7 +42,7 @@ class World() extends Entity{
      
      	var importer = new VoxelMagicaImporter( terrain  );
 		//println( System.getProperty("user.home") + "/workspace/UltraBlackBloodDeath/assets/monu9.vox" );
-		  importer.readVoxelMagicaModel(System.getProperty("user.home") + "/workspace/UltraBlackBloodDeath/assets/monu9.vox");
+		  importer.readVoxelMagicaModel(System.getProperty("user.home") + "/git/UltraBlackBloodDeath/assets/monu9.vox");
 		  
 		  terrain.build( assetLibrary )
 		  
@@ -59,8 +62,7 @@ class World() extends Entity{
 	    moon.setColor(ColorRGBA.Blue);
 	    node.addLight(moon);
 		 
-		 println("added light usin scala");
-		 
+		 		 
    }
   
   
@@ -91,6 +93,13 @@ class World() extends Entity{
       terrain.update(tpf,playerPosComponent)
       
       //gamedata 
+      
+    }
+    
+    
+    def processGameAction(action: CustomGameAction)
+    {
+      println("world processing game action " + action.toString() );
       
     }
     

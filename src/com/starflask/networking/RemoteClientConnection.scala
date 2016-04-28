@@ -15,13 +15,16 @@ import com.jme3.network.service.serializer.ClientSerializerRegistrationsService;
 
 //This is opposite of 'GameServerProcess.scala'
  import com.starflask.events.GameActionQueue
+ import com.starflask.world.World
+ import com.starflask.world.GameActionExecutor
   
 
 
 object TestClient {
   
   def main(args: Array[String]): Unit = {
-    var testclient = new RemoteClientConnection();
+    var world = new World();
+    var testclient = new RemoteClientConnection( world.gameActionExecutor  );
     var thread = new Thread(testclient);
     thread.start( );
   }
@@ -32,7 +35,7 @@ object TestClient {
  * IF the server is a listen server, one of these will be run by the 'host' as well..
  * 
  */
-class RemoteClientConnection extends Runnable{
+class RemoteClientConnection( executor: GameActionExecutor ) extends Runnable{
   
     var lastSampleTime = System.currentTimeMillis
   final val ACTION_SAMPLING_RATE = 33   //ms... this is about 30 fps
@@ -47,7 +50,7 @@ class RemoteClientConnection extends Runnable{
        myClient.start(); //connect to the server 
        
        
-       var myListener = new ClientListener();
+       var myListener = new ClientListener(gameActionQueue);
    
      NetworkUtils.registerMessageTypes(myClient, myListener );
      
@@ -97,11 +100,14 @@ class RemoteClientConnection extends Runnable{
      //sample actions and then send them out over to the server..server will change some gamestate values based on this 
      
     
-    
+    gameActionQueue.feedEvents { ev => processAction(ev);  }
   }
     
     
-    
+    def processAction(action: CustomGameAction)
+    {
+          println("server sent us a gameaction " + action.toString());
+    }
     
   
   

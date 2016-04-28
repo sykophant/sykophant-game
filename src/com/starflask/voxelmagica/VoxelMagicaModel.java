@@ -78,7 +78,7 @@ public class VoxelMagicaModel implements VoxImporterListener{
 		@Override
 		public void blockConstructed(  int x, int y, int z, int color) {
 			blocks.add(new BlockData(    x,  y,  z,  color));
-			System.out.println("placed block ");
+		 
 			
 		}
 		

@@ -12,7 +12,13 @@ import com.starflask.util.Vector3f
  
 object GameEngine {
   
- 
+ /*
+  * 
+  * Mutable:
+			Voxel grids/volumes (my games are generally tile/voxel based)
+				My entities (and their animation matrices)    --cant keep copying them because of GC issues
+			"Tesselators" wrappers for Float arrays used for temporarily storing generated geometry.
+  */
   
  
   case class Player(playerId:Int, name: String)
@@ -66,5 +72,10 @@ object Engine {
         
   }
   }*/
+  
+  
+  
+  
+  
   
 }

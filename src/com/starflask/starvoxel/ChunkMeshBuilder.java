@@ -460,7 +460,7 @@ public class ChunkMeshBuilder  {
 				absZ + 1);*/
 		
 		Vector4f topRightColor = chunk.getColor(blockId);
-		System.out.println("quad color " + topRightColor);
+		 
 		arrays.getColors().add(new float[]{
 				topRightColor.x,topRightColor.y,topRightColor.z,topRightColor.w,
 				topRightColor.x,topRightColor.y,topRightColor.z,topRightColor.w,

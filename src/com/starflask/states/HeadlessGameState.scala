@@ -31,9 +31,9 @@ import com.starflask.networking.GameServerProcess
 	  //This is the gamestate of the server
 	 
 		var world = new World();
-		var localActionManager  = new LocalGameActionManager();
+		//var localActionManager  = new LocalGameActionManager();
 		
-			var serverConnection = new GameServerProcess(); //our network connection with the server 
+		var serverProcess = new GameServerProcess( world.gameActionExecutor  ); //our network connection with the server 
 	
 		
 		//var chatManager = new LocalChatManager();
@@ -44,7 +44,9 @@ import com.starflask.networking.GameServerProcess
 		override def initialize( stateManager: AppStateManager,  app: Application) {
 		      super.initialize(stateManager, app); 
 		       
-		      var thread = new Thread(serverConnection);
+		      
+		      
+		      var thread = new Thread(serverProcess);
           thread.start( );
     
     
@@ -57,14 +59,7 @@ import com.starflask.networking.GameServerProcess
 		      
  
 		      setEnabled(true);
-		      
-		   
-		      localActionManager.setReactiveGameData(world.gamedata)    //(this is bad practice) we do this so it can combine actions with the world state data to then send info to the server 
-		     
-	       //send local actions (like pressing the FIRE button) to the remoteClientConnection
-		      localActionManager.actionPublisher.subscribe( (ev)  =>  serverConnection.gameActionQueue.addEvent(ev)  )   //this should work now
-		     
-		   
+		    
 		        
 		   }
 		 

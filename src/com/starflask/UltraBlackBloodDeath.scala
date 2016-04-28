@@ -5,16 +5,26 @@ import com.starflask.events.CoreEventPublisher.CoreEvent
 import com.starflask.events.CoreEventPublisher._
 import com.starflask.states.HeadlessGameState
 import com.starflask.states._
+import com.jme3.system.AppSettings
 
 
 object UltraBlackBloodDeath {
   
   def main(args: Array[String]): Unit = {
     var app = new UltraBlackBloodDeath();
-    		
-		//AppSettings settings = new AppSettings(false);
+    
+     app.setShowSettings(false);
+		var settings = new AppSettings(true);
 		//settings.setAudioRenderer(AppSettings.JOAL);
-		//app.setSettings(settings);  
+		
+   // settings.put("Width", 1280:java.lang.Integer);
+   // settings.put("Height", 720:java.lang.Integer);
+		
+		  settings.put("Width", 300:java.lang.Integer);
+      settings.put("Height", 200:java.lang.Integer);
+
+    settings.put("Title", "Sykophant");
+		app.setSettings(settings);  
 		
 	 //app.start( JmeContext.Type.Headless );
     app.start();

@@ -6,6 +6,15 @@ import com.jme3.network._;
 import com.starflask.networking._;
 import com.jme3.network.service.serializer.ServerSerializerRegistrationsService;
 import com.starflask.events.GameActionQueue
+import com.starflask.events.GameActionPublisher.CustomGameAction
+import com.starflask.events.GameActionPublisher.JoinServerAction
+import com.starflask.networking.NetworkUtils.NetworkMessage 
+import com.starflask.events.GameActionPublisher.SpawnUnitAction
+import com.starflask.util.Vector3f
+import com.starflask.world.World
+import com.starflask.world.GameEngine.ReactiveGameData 
+import com.starflask.world.GameActionExecutor
+import com.starflask.events.GameActionPublisher.NetworkTickAction
 
 /*
  * Just like sands..
@@ -21,14 +30,18 @@ import com.starflask.events.GameActionQueue
  */
 object TestServer {
   def main(args: Array[String]): Unit = {
-    var testserver = new GameServerProcess();
+   var world = new World();
+    var testserver = new GameServerProcess(world.gameActionExecutor);
     var thread = new Thread(testserver);
     thread.start( );
   }
 }
 
 
-class GameServerProcess extends Runnable{
+class GameServerProcess(gameActionExecutor: GameActionExecutor ) extends Runnable{
+  
+  var actionExecutor = gameActionExecutor;  //used to push discrete game actions to the World
+  var gamedata = actionExecutor.gamedata;  //used to push unit pos and stat update to the clients
   
   var lastTickTime = System.currentTimeMillis
   final val NETWORK_TICK_RATE = 66  //66 millis
@@ -40,6 +53,7 @@ class GameServerProcess extends Runnable{
   override def run()
   {
     
+     
     build(); 
     
      
@@ -74,17 +88,18 @@ class GameServerProcess extends Runnable{
     
   }
   
+  private var myServer = Network.createServer(6143);
   
   def build()
   {
     
-    var myServer = Network.createServer(6143);
+   
     
     myServer.getServices().removeService(myServer.getServices().getService( classOf[ServerSerializerRegistrationsService] ));
     
     myServer.start();
     
-    var listener = new ServerListener();
+    var listener = new ServerListener( gameActionQueue  );
     
     NetworkUtils.registerMessageTypes(myServer, listener);
     
@@ -99,11 +114,32 @@ class GameServerProcess extends Runnable{
   def update(networkTick: Int )
   {
     
-
+    //pop events off the stack and process them (only process them in the right network tick?)
     
+    gameActionQueue.feedEvents { ev => processAction(ev,networkTick);broadcastAction(ev) }
+    
+    //should rebroadcast these out!
+    
+    broadcastAction(new NetworkTickAction( networkTick ));  //all tcp so all messages will go in order... locksteppy..
     
   }
-  
+    
+    def broadcastAction(action: CustomGameAction)  
+     {
+          
+           myServer.broadcast(new NetworkMessage(action));
+           
+     }
+    
+    def processAction(action: CustomGameAction, tick: Int)
+    {
+      actionExecutor.execute(action,tick);
+    }
+    
+   
+     def getCurrentNetworkTick() = networkTick
+     
+     
   
   
 }

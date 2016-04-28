@@ -15,15 +15,21 @@ class GameActionQueue extends GenericEventQueue {
   }
     
     
+    
      
-   def popEvent =  queuedEvents.take(1).last  //first in first out 
+//   def popEvent =  queuedEvents.last  //first in first out 
    
    //Ugh im jizzing my pants scala is so cool...
    def feedEvents(f:CustomGameAction => Unit)
    { 
      while(!queuedEvents.isEmpty )
      {
-       f(popEvent)
+       //this equivalent to popping the last element off the list 
+       f( queuedEvents.last )
+       
+       var newList = queuedEvents.init
+       
+       queuedEvents = newList
      }
    }
     

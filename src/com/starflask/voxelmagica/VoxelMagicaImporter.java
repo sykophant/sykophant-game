@@ -230,8 +230,7 @@ public class VoxelMagicaImporter {
 				
 				
 				int color_index = voxelData[i].color - 1; 
-				System.out.println("block placed " + i + " - " + voxelData[i].x + "." + voxelData[i].y +"." + voxelData[i].z);   //this is weird..
-				listener.blockConstructed(  voxelData[i].x, voxelData[i].y, voxelData[i].z, color_index);
+				 listener.blockConstructed(  voxelData[i].x, voxelData[i].y, voxelData[i].z, color_index);
 				
 			}
 		}
