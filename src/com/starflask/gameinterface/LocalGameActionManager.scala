@@ -93,7 +93,7 @@ class LocalGameActionManager extends Entity   with InputActionExecutor {
 	      
 	}
 	
-	 var reactiveGameData =   ReactiveGameData(0, Map[Int, HardUnit]())
+	 var reactiveGameData =   ReactiveGameData(0 )
 	 
 	 def setReactiveGameData(data: ReactiveGameData)
 	 {

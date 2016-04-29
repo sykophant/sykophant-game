@@ -15,6 +15,8 @@ import com.starflask.world.World
 import com.starflask.world.GameEngine.ReactiveGameData 
 import com.starflask.world.GameActionExecutor
 import com.starflask.events.GameActionPublisher.NetworkTickAction
+import com.starflask.events.GameActionPublisher.ServerStatusAction
+import scala.util.Random
 
 /*
  * Just like sands..
@@ -31,15 +33,16 @@ import com.starflask.events.GameActionPublisher.NetworkTickAction
 object TestServer {
   def main(args: Array[String]): Unit = {
    var world = new World();
-    var testserver = new GameServerProcess(world.gameActionExecutor);
+    var testserver = new GameServerProcess(world.gameActionExecutor, Math.random());
     var thread = new Thread(testserver);
     thread.start( );
   }
 }
 
 
-class GameServerProcess(gameActionExecutor: GameActionExecutor ) extends Runnable{
+class GameServerProcess(gameActionExecutor: GameActionExecutor, seed: Double ) extends Runnable{
   
+  var randomSeed = new Random((seed*100000).toLong);
   var actionExecutor = gameActionExecutor;  //used to push discrete game actions to the World
   var gamedata = actionExecutor.gamedata;  //used to push unit pos and stat update to the clients
   
@@ -133,6 +136,12 @@ class GameServerProcess(gameActionExecutor: GameActionExecutor ) extends Runnabl
     
     def processAction(action: CustomGameAction, tick: Int)
     {
+      
+      action match 
+      { //when a new player joins, get that player the deterministic random seed
+        case j : JoinServerAction => broadcastAction(new ServerStatusAction(randomSeed));
+      }
+      
       actionExecutor.execute(action,tick);
     }
     

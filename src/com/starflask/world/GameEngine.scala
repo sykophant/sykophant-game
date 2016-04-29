@@ -5,6 +5,8 @@ import com.starflask.util.Vector3f
  
  import scala.concurrent.Future
  import com.starflask.units.HardUnit
+ import scala.collection.mutable.ArrayBuffer
+ import com.starflask.util.PositionVector
 
 //This is a thread-safe deterministic engine that manipulates ReactiveGameData in a function way
  
@@ -21,16 +23,21 @@ object GameEngine {
   */
   
  
-  case class Player(playerId:Int, name: String)
+  case class Player(playerId:Int, n: String)
+  {
+    var id = playerId;
+    var name = n;
+  }
  
   
-  case class ReactiveGameData(networkTick: Int, units: Map[Int, HardUnit] ) //this is the state that gets passed around each frame... 
+  case class ReactiveGameData(networkTick: Int) //this is the state that gets passed around each frame... 
   {
     
-    def this() = this(0,Map() ) 
+    def this() = this(0 ) 
     
-    //this is the player list
-    var players =  new Array[Player](64)
+    //this are player and unit lists - they are mutable to be easy on the GC 
+    var players =  Map[Int, Player]()
+    var units =   Map[Int, HardUnit]()
     
     var localPlayerId = -1
     
@@ -44,6 +51,38 @@ object GameEngine {
     
     
   }
+  
+  class TeamData()
+  {
+    var name = "New Team"
+    var color = "#FF0000"
+  }
+  
+  class BlockType()
+  {
+    var name = "New Block"
+    var spawnable = Map[TeamData, Boolean]()  //can this team spawn here?
+    var invisible = false;
+    var collidable = true;  //used to build a collision map
+    
+    
+    
+  }
+  
+  case class BlackPrint()//loaded from a file
+  {
+    
+    var teams = Map[Int, TeamData]()
+    
+    var blockTypes = Map[Int, BlockType]()
+    
+    var name = "New Blackprint"
+    
+    var mapHash = "maphash"
+    
+    
+  }
+  
   
   
   sealed trait GameAction

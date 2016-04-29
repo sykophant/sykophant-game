@@ -33,7 +33,7 @@ import com.starflask.networking.GameServerProcess
 		var world = new World();
 		//var localActionManager  = new LocalGameActionManager();
 		
-		var serverProcess = new GameServerProcess( world.gameActionExecutor  ); //our network connection with the server 
+		var serverProcess = new GameServerProcess( world.gameActionExecutor, Math.random()  ); //our network connection with the server 
 	
 		
 		//var chatManager = new LocalChatManager();

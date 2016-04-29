@@ -29,7 +29,7 @@ class World() extends Entity{
 
   var myPlayerId = 0 
   
-  var gamedata =  ReactiveGameData( 0 , Map[Int, HardUnit]() )//gets replaced by a new copy each time
+  var gamedata =  ReactiveGameData( 0  )//gets replaced by a new copy each time
   
   
   val terrain = new VoxelTerrain();
